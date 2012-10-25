@@ -1,0 +1,38 @@
+Tweet Geolocation Sample
+========================
+
+This sample application demonstrates inserting, updating and deleting twitter 
+tag and geolocation information. 
+
+Running The Sample
+==================
+The application is very simple to build. It does require that you have Java JDK
+1.6 or JDK 1.7 installed. It will require 2 terminal windows and one browser.
+Ideally you would run the application from a Mac or a Linux machine with a
+dekstop using Chrome, Safari or FireFox.
+
+In the first terminal window:
+1. Export VOLT_HOME=<you voltdb home directory>
+2. Run ./run.sh 
+
+In the browser:
+1. Open in index.htm
+
+In the second terminal window:
+1. Export VOLT_HOME=<you voltdb home directory>
+2. Run ./run.sh client
+
+The first terminal window will compile the ddl, project and Java source files.
+It will then start the VoltDB server
+
+The browser will open the index.htm and display a map, an empty table and 
+indicate that no records have been read.
+
+The second terminal window will run the data feed. It will populate the VoltDB.
+You will then see the browser begin to update. A chart will also be displayed.
+The tweet data is time sensitive and consequently will cause the counts to
+rise and then decline. The rate of rise and decline is fixed so there will
+be a steady climb, a peak and then a steady decline until the data reaches
+a plateau. The data expiration is done during the insertion process, which is
+why the data plateaus once the clinet data feed stops. You may rerun the
+client in terminal 2 to see the data flatline and then begine to climb again.

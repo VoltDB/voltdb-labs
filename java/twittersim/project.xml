@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<project>
+    <info>
+        <name>Tweet Example</name>
+        <version>1.0</version>
+        <description>Demonstrates a Twitter fire-hose consumer.</description>
+    </info>
+    <database>
+        <schemas>
+            <schema path='ddl.sql' />
+        </schemas>
+        <procedures>
+            <procedure class='tweets.procedures.Cleanup' />
+            <procedure class='tweets.procedures.Tweet' />
+            <procedure class='tweets.procedures.GetHeatmap' />
+            <procedure class='tweets.procedures.GetTrending' />
+        </procedures>
+        <partitions>
+            <partition table='tweet' column='tag' />
+        </partitions>
+    </database>
+</project>

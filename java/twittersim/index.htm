@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+		<title>World of Tweets: Real-Time Results</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script language="javascript" type="text/javascript" src="./js/jquery-1.6.1.min.js"></script>
+     <script language="javascript" type="text/javascript" src="./js/jqplot/jquery.jqplot.min.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/voltdb.js"></script>
+        <style>
+            body {background-color:#ffffff;font-family: Verdana,Arial,sans-serif;font-size:80%;-moz-user-select: none;}
+            #centerContent{ width: 743px; margin-right: auto; margin-left: auto;}
+            #mapContent{ border: 1px solid #c0deed; padding: 10px;}
+            #mapContainer {position: relative; height: 360px;}
+            #map {position:absolute;left:0px;top:0px;border:1px solid #cccccc;opacity:0.2;}
+            #co {position:absolute;left:0px;top:0px;}
+
+            #header {margin-bottom: 10px;}
+            #header span {margin-left:10px;}
+            #trendingContainer{margin-bottom: 10px; padding: 10px; border-style: solid; border-color: #c0deed; border-top-width: 0px; border-left-width: 1px; border-right-width: 1px; border-bottom-width: 1px; overflow: hidden;}
+            #trendingColumn1{ float: left; width: 230px; margin-right: 20px;}
+            #trendingColumn2{ float: right; width: 450px; height: 300px; }
+            #trendingTopics tbody tr td { cursor: pointer }
+            .sparkContainer{ height: 10px; width: 50px}
+            .highlight { background-color: yellow}
+            .cellLeft { border-left: 1px solid #b0cedd;}
+            .cellTop { border-top: 1px solid #b0cedd;}
+            .cellBottom { border-bottom: 1px solid #b0cedd;}
+            .cellRight { border-right: 1px solid #b0cedd;}
+            th { padding: 5px 10px;}
+            td { padding: 5px 10px;}
+        </style>
+        <script type="text/javascript" language="javascript">
+        var con;
+        var intervalId;
+        var ctx = null;
+        var precision = 1;
+        var scale = 2;
+        var selectedTopicElement = null;
+        var colors = ['rgb(0,0,255)','rgb(0,128,255)','rgb(0,205,255)','rgb(0,255,255)','rgb(0,255,128)','rgb(0,255,0)','rgb(128,255,0)','rgb(205,255,0)','rgb(255,255)','rgb(255,205,0)','rgb(255,128,0)','rgb(255,0,0)'];
+        function getColor(value)
+        {
+            var i = 0;
+            if (value < 5)
+                i = 0;
+            else if (value < 10)
+                i = 1;
+            else if (value < 25)
+                i = 2;
+            else if (value < 50)
+                i = 3;
+            else if (value < 100)
+                i = 4;
+            else if (value < 250)
+                i = 5;
+            else if (value < 500)
+                i = 6;
+            else if (value < 1000)
+                i = 7;
+            else if (value < 2500)
+                i = 8;
+            else if (value < 5000)
+                i = 9;
+            else if (value < 10000)
+                i = 10;
+            else
+                i = 11;
+            return colors[i];
+        }
+        function RefreshData()
+        {
+            var tmpTopic = selectedTopicElement ? selectedTopicElement : '';
+            con.BeginExecute('GetHeatmap', [''+precision, tmpTopic], function(response)
+            {
+                try
+                {
+                    $('#overlay').html('');
+                    ctx.clearRect(0,0,360*scale,180*scale);
+                    var total = 0;
+                    for(var i=0;i<response.results[0].data.length;i++)
+                    {
+                        total += response.results[0].data[i][2];
+                        ctx.fillStyle = getColor(response.results[0].data[i][2]);
+                        ctx.fillRect(response.results[0].data[i][1]*scale-scale, response.results[0].data[i][0]*scale-scale, precision*scale, precision*scale); 
+                    }
+                    $('#header span').text(formatNumber(total));
+                }
+                catch(x) {}
+            });
+            
+            con.BeginExecute('GetTrending', [], function (response)
+            {
+                try
+                {
+                    var topicRows = '';
+                    var series = [];
+                    var plots = []; 
+                    if (response.results[0].data.length > 0 ) {
+                        for(var i=0;i<response.results[0].data.length;i++)
+                        {
+                            series[i] = { showMarker:false };
+                            var topic = response.results[0].data[i][0];
+                            var references = response.results[0].data[i][1];
+                            topicRows += '<tr><td id=\'' + topic + '\' onclick=\'filter(\"' + topic +'\", true)\'>' + topic + '</td><td onclick=\'filter(\"' + topic +'\", true)\'>' + references + '</td></tr>';
+                        }
+                        
+                        $('#trendingTopics tbody').html(topicRows);
+                        var rows = $('#trendingTopics tbody tr');
+                        var lastRow;
+                        for ( var index = 0; index < rows.length; index++) {
+                            lastRow = $(rows[index]).children();
+                            $(lastRow[0]).addClass('cellTop cellLeft');
+                            $(lastRow[1]).addClass('cellTop cellLeft cellRight');
+                        }
+                        
+                        $(lastRow[0]).addClass('cellBottom');
+                        $(lastRow[1]).addClass('cellBottom');
+                        filter(selectedTopicElement, false);
+                        
+                        var tags = {};
+                        var data = response.results[1].data;
+                        for ( var i = 0; i<data.length;i++ ) {
+                            if ( !tags[data[i][0]] ) {
+                                tags[data[i][0]] = [];
+                            }
+                            tags[data[i][0]].push(data[i][1]);
+                        }
+                        
+                       
+                        $.each(tags, function( index, value) {
+                            plots.push(value);
+                        });
+                    }
+                        $("#chart").html('');
+                        var plot1 = $.jqplot ('chart', plots, {
+                            title: 'Tweets per Interval',
+                            series: series,
+                            axes: {
+                              // options for each axis are specified in seperate option objects.
+                              xaxis: {
+                                label: "Interval",
+                                pad: 0
+                              },
+                              yaxis: {
+                                pad: 0
+                              }
+                            }
+                          });
+                    plot1.redraw();
+                }
+                catch(x) {}
+            });
+        }
+        
+        function filter(topic, clearSelected) {
+            
+            var newTopicElement = topic;
+            if (selectedTopicElement) {
+                $('#'+selectedTopicElement).removeClass('highlight');
+            }
+            
+            if ( clearSelected === false || newTopicElement !== selectedTopicElement) {
+                $('#'+newTopicElement).addClass('highlight');
+                selectedTopicElement =  newTopicElement;
+            } else if ( clearSelected === true && newTopicElement === selectedTopicElement ) {
+                selectedTopicElement = null;
+            }
+        }
+        
+        function SetRefreshInterval(interval)
+        {
+            if (intervalId != null)
+            {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+            if(interval > 0)
+                intervalId = setInterval(RefreshData, interval*1000);
+            $('#sInterval').val(interval);
+        }
+        function SetPrecision(p)
+        {
+            precision = p;
+            $('#sPrecision').val(precision);
+        }
+        function SetScale(s)
+        {
+            scale = s;
+            $('#map').attr({ width: 360*scale, height: 180*scale });
+            $('#co').attr({ width: 360*scale, height: 180*scale });
+            $('#sScale').val(scale);
+        }
+
+        function formatNumber(num)
+        {
+            var cnum = ""+num;
+            var parr = [], j = cnum.length, m = Math.floor(j / 3), n = cnum.length % 3 || 3;
+    	    for (var i = 0; i < j; i += n)
+            {
+    	        if (i != 0) {n = 3;}
+	            parr[parr.length] = cnum.substr(i, n);
+	            m -= 1;
+	        }
+    	    return parr.join(',');
+        }
+        $(document).ready(function(){
+            con = VoltDB.AddConnection('localhost', 8080, false, null, null, false, (function(connection, success)
+            { }));
+            ctx = document.getElementById("co").getContext('2d');
+            ctx.globalAlpha = 0.6;
+            SetPrecision(1);
+            SetScale(2);
+            SetRefreshInterval(1);
+        });
+        </script>
+    </head>
+    <body>
+        <div id="centerContent">
+            <h1>Trending Twitter Tag Simulator with Geolocation</h1>
+            <div id="mapContent">
+                <div id="header">
+                    <b>Refresh Data: </b>
+                    <select id="sInterval" onchange="SetRefreshInterval(this.value)">
+                        <option value="1" selected>Every second</option>
+                        <option value="5">Every 5 seconds</option>
+                        <option value="10">Every 10 seconds</option>
+                        <option value="30">Every 30 seconds</option>
+                        <option value="60">Every minute</option>
+                        <option value="-1">Paused</option>
+                    </select>
+                    <b>Precision: </b>
+                    <select id="sPrecision" onchange="SetPrecision(this.value)">
+                        <option value="1" selected>1 degree</option>
+                        <option value="5">5 degrees</option>
+                        <option value="10">10 degrees</option>
+                    </select>
+                    <b>Scale: </b>
+                    <select id="sScale" onchange="SetScale(this.value)">
+                        <option value="1">50%</option>
+                        <option value="2" selected>100%</option>
+                        <option value="4">200%</option>
+                    </select>
+                    <b>Total events:</b> <span>...</span>
+                </div>
+                <div id="mapContainer">
+                    <img id="map" src="mapc.jpg" width="720" height="360" />
+                    <canvas id="co" width="720" height="360"></canvas>
+                </div>
+                
+            </div>
+            <div id="trendingContainer">
+                <div id="trendingColumn1">
+                    <table id="trendingTopics" cellpadding=0 cellspacing=0>
+                        <thead>
+                            <tr><th class="cellTop cellLeft">Trending Topics</th><th class="cellTop cellLeft cellRight">References</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="cellTop cellLeft">&nbsp;</td><td class="cellTop cellLeft cellRight">&nbsp;</td></tr>
+                            <tr><td class="cellTop cellLeft">&nbsp;</td><td class="cellTop cellLeft cellRight">&nbsp;</td></tr>
+                            <tr><td class="cellTop cellLeft">&nbsp;</td><td class="cellTop cellLeft cellRight">&nbsp;</td></tr>
+                            <tr><td class="cellTop cellLeft">&nbsp;</td><td class="cellTop cellLeft cellRight">&nbsp;</td></tr>
+                            <tr><td class="cellTop cellLeft">&nbsp;</td><td class="cellTop cellLeft cellRight">&nbsp;</td></tr>
+                            <tr><td class="cellTop cellLeft">&nbsp;</td><td class="cellTop cellLeft cellRight">&nbsp;</td></tr>
+                            <tr><td class="cellTop cellLeft">&nbsp;</td><td class="cellTop cellLeft cellRight">&nbsp;</td></tr>
+                            <tr><td class="cellTop cellLeft">&nbsp;</td><td class="cellTop cellLeft cellRight">&nbsp;</td></tr>
+                            <tr><td class="cellTop cellLeft cellBottom">&nbsp;</td><td class="cellTop cellLeft cellRight cellBottom">&nbsp;</td></tr>
+                        </tbody>
+                        <tfoot><tr><td colspan='2' rowspan='2'>Click on a tag to filter the map.<br/>Click on it a second time to disable the filter.</td></tr></tfoot>
+                    </table>
+                </div>
+                <div id="trendingColumn2">
+                    <div id="chart"></div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
