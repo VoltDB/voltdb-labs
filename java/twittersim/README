@@ -16,7 +16,7 @@ In the first terminal window:
 2. Run ./run.sh 
 
 In the browser:
-1. Open in index.htm
+1. Open index.htm
 
 In the second terminal window:
 1. Export VOLT_HOME=<you voltdb home directory>
