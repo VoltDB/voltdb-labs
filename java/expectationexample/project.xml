@@ -1,0 +1,12 @@
+<project>
+    <info>
+        <name>expectationsample</name>
+        <version>1</version>
+        <description>Example of how to use expectations in a stored procedure</description>
+    </info>
+    <database>
+        <schemas>
+            <schema path='ddl.sql' />
+        </schemas>
+    </database>
+</project>
