@@ -1,0 +1,12 @@
+<project>
+    <info>
+        <name>upsertsample</name>
+        <version>1</version>
+        <description>Example of how to write an upsert procedure</description>
+    </info>
+    <database>
+        <schemas>
+            <schema path='ddl.sql' />
+        </schemas>
+    </database>
+</project>
