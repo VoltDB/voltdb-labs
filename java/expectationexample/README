@@ -3,6 +3,10 @@ Expectation Sample
 
 This sample application demonstrates how to write a stored procedure using expectations for query result validation rather than writing extra branching logic.
 
+VoltDB Requirements
+===================
+Sample requires VoltDB 2.8.3 or higher.
+
 Running The Sample
 ==================
 The application requires very little to run.
