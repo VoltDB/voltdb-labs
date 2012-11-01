@@ -4,6 +4,10 @@ Upsert Sample
 This sample application demonstrates how to write an "upsert", or procedure that
 determines whether to insert a new record or update an existing one.
 
+VoltDB Requirements
+===================
+Sample requires VoltDB 2.8.3 or higher.
+
 Running The Sample
 ==================
 The application requires very little to run.
