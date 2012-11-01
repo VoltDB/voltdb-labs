@@ -43,9 +43,9 @@ import com.voltdb.upsert.configuration.UpsertConfiguration;
 /**
  * Helper class that sets up the basic voltdb client services. TODO: This should
  * be moved to a common jar so all the Java examples share the same base class.
- * 
+ *
  * @author awilson
- * 
+ *
  */
 public abstract class BaseVoltApp {
 
@@ -79,7 +79,7 @@ public abstract class BaseVoltApp {
      * Connect to a single server with retry. Limited exponential backoff. No
      * timeout. This will run until the process is killed if it's not able to
      * connect.
-     * 
+     *
      * @param server
      *            hostname:port or just hostname (hostname can be ip).
      */
@@ -107,7 +107,7 @@ public abstract class BaseVoltApp {
     /**
      * Connect to a set of servers in parallel. Each will retry until
      * connection. This call will block until all have connected.
-     * 
+     *
      * @param servers
      *            A comma separated list of servers using the hostname:port
      *            syntax (where :port is optional).
@@ -138,7 +138,7 @@ public abstract class BaseVoltApp {
     /**
      * Block until the transaction queue completes, display example statistics
      * and close the connection to the cluster.
-     * 
+     *
      * @throws NoConnectionsException
      * @throws InterruptedException
      */
@@ -190,14 +190,14 @@ public abstract class BaseVoltApp {
         System.out.printf("Throughput %d/s, ", stats.getTxnThroughput());
         System.out.printf("Aborts/Failures %d/%d, ",
                 stats.getInvocationAborts(), stats.getInvocationErrors());
-        System.out.printf("Avg/95%% Latency %d/%dms\n",
+        System.out.printf("Avg/95%% Latency %.2f/%dms\n",
                 stats.getAverageLatency(), stats.kPercentileLatency(0.95));
 
     }
 
     /**
      * Manages the execution of the example and gathers its runtime statistics
-     * 
+     *
      * @throws Exception
      */
     public void start() throws Exception {
@@ -217,7 +217,7 @@ public abstract class BaseVoltApp {
 
     /**
      * Implement the body of the example in the derived class.
-     * 
+     *
      * @throws Exception
      */
     protected abstract void execute() throws Exception;
