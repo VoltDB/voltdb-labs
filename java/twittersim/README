@@ -35,4 +35,4 @@ rise and then decline. The rate of rise and decline is fixed so there will
 be a steady climb, a peak and then a steady decline until the data reaches
 a plateau. The data expiration is done during the insertion process, which is
 why the data plateaus once the clinet data feed stops. You may rerun the
-client in terminal 2 to see the data flatline and then begine to climb again.
+client in terminal 2 to see the data flatline and then begin to climb again.
