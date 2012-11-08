@@ -24,7 +24,6 @@
 package com.voltdb.demographicanalytics.configuration;
 
 import org.voltdb.CLIConfig;
-import org.voltdb.CLIConfig.Option;
 /**
  * Command line parser
  * This sample only needs the server.
@@ -44,6 +43,9 @@ public class SampleConfiguration extends CLIConfig {
 
     @Option(desc = "How often to display transaction statistics.")
     public int displayinterval = 5;
+    
+    @Option(desc = "Configuration file JSON config file.")
+    public String configfile = "default.json";
 
     public SampleConfiguration() {
     }
