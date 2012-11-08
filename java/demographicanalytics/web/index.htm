@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>Ad Data Stream Viewer</title>
+    <link rel="stylesheet" type="text/css" href="css/screen.css" />
+
+    <link rel="stylesheet" type="text/css"
+    href="css/redmond/jquery-ui-1.8.23.custom.css" />
+    <link rel="stylesheet" type="text/css"
+    href="./javascript/datatables/css/jquery.dataTables.css" />
+    <link rel="stylesheet" type="text/css"
+    href="./javascript/jqplot/jquery.jqplot.css" />
+    <script language="javascript" type="text/javascript"
+    src="./javascript/jquery-1.8.1.min.js"></script>
+    <script language="javascript" type="text/javascript"
+    src="./javascript/jquery-ui-1.8.23.custom.min.js"></script>
+    <script language="javascript" type="text/javascript"
+    src="./javascript/jquery.jeditable.mini.js"></script>
+    <script language="javascript" type="text/javascript"
+    src="./javascript/jqplot/jquery.jqplot.min.js"></script>
+    <script language="javascript" type="text/javascript"
+    src="./javascript/datatables/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" language="javascript"
+    src="./javascript/jqplot/plugins/jqplot.dateAxisRenderer.js"></script>
+    <script type="text/javascript" language="javascript"
+    src="./javascript/jqplot/plugins/jqplot.logAxisRenderer.js"></script>
+    <script type="text/javascript"
+    src="./javascript/jqplot/plugins/jqplot.pieRenderer.min.js"></script>
+    <script type="text/javascript" language="javascript"
+    src="./javascript/voltdb.js"></script>
+    <style type="text/css">
+        /*demo page css*/
+        #test {
+            font-size: 80%
+        }
+
+        .css_right {
+            float: right
+        }
+
+        table.jqplot-table-legend {
+            width: 10%;
+        }
+    </style>
+  </head>
+  <body style="height: 3200px;">
+    <div class="container prepend-top">
+
+      <div class="span-24 last">
+        <div class="span-24 prepend-top last ">
+          <h1>Ad Data Stream Viewer</h1>
+        </div>
+        <div class="span-24">
+          <div id="tabs" class="span-24 last">
+            <ul>
+              <li>
+                <a href="#tabs-1">Campaign Manager</a>
+              </li>
+              <li>
+                <a href="#tabs-2">Analytics</a>
+              </li>
+            </ul>
+            <div id="tabs-1">
+              <div id="impressionsToConversions" class="span-23 last">
+                <h3 class="span-23 last">Impressions To Conversions Stream</h3>
+                <div id="chartdiv" class="span-23 last" style="height: 400px;"></div>
+              </div>
+              <div id="pieCharts" class="span-23 last">
+                <h3 class="span-23 last">Impressions To Conversions Charts</h3>
+                <div id="impressionsChart" class="span-11"></div>
+                <div id="conversionsChart"
+                class="push-1 span-11 last"></div>
+              </div>
+              <div
+              id="tableContainer"
+              class="span-23 last prepend-top">
+                <h3 class="span-23 last">Network Traffic</h3>
+                <h4 class="span-23 last">Total Transactions: <span id="transactionCount"></span></h4>
+                <table id="networkData"></table>
+              </div>
+              <div
+              id="tableCostContainer"
+              class="span-23 last prepend-top">
+                <h3 class="span-23 last">Network Cost</h3>
+                <table id="networkCostData"></table>
+              </div>
+
+            </div>
+            <div id="tabs-2">
+              <div
+              id="tableEconomistContainer"
+              class="span-23 last prepend-top">
+                <p>
+                  Statistics are 7 seconds old.
+                </p>
+              </div>
+              <div
+              id="tableEconomistContainer"
+              class="span-23 last prepend-top">
+                <h3 class="span-23 last">Economist</h3>
+                <h4 class="span-23 last">Demographic profiles: <span id="EconomistProfiles"></span></h4>
+                <table id="Economist"></table>
+              </div>
+              <div
+              id="tableFacebookContainer"
+              class="span-23 last prepend-top">
+                <h3 class="span-23 last">Facebook</h3>
+                <h4 class="span-23 last">Demographic profiles: <span id="FacebookProfiles"></span></h4>
+                <table id="Facebook"></table>
+              </div>
+              <div
+              id="tableTimesContainer"
+              class="span-23 last prepend-top">
+                <h3 class="span-23 last">NY Times</h3>
+                <h4 class="span-23 last">Demographic profiles: <span id="NYTimesProfiles"></span></h4>
+                <table id="NYTimes"></table>
+              </div>
+              <div
+              id="tableSlashdotContainer"
+              class="span-23 last prepend-top">
+                <h3 class="span-23 last">Slashdot</h3>
+                <h4 class="span-23 last">Demographic profiles: <span id="SlashdotProfiles"></span></h4>
+                <table id="Slashdot"></table>
+              </div>
+              <div
+              id="tableWSJContainer"
+              class="span-23 last prepend-top">
+                <h3 class="span-23 last">WSJ</h3>
+                <h4 class="span-23 last">Demographic profiles: <span id="WSJProfiles"></span></h4>
+                <table id="WSJ"></table>
+              </div>
+              <div
+              id="tableYahooContainer"
+              class="span-23 last prepend-top">
+                <h3 class="span-23 last">Yahoo!</h3>
+                <h4 class="span-23 last">Demographic profiles: <span id="YahooProfiles"></span></h4>
+                <table id="Yahoo"></table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      var con;
+      var lineChart;
+      var pieCharts = {};
+      var tabIntervalHandle;
+      var networks = ['Slashdot', 'NY Times', 'Economist', 'WSJ', 'Facebook', 'Yahoo!'];
+      var networkToTable = { }
+
+      function updateLegend(legend, name) {
+        legend.push({
+          label : name,
+          showMarker : false
+        });
+      }
+
+      function renderLineChart(legend, series) {
+        if(lineChart) {
+
+          lineChart.replot({
+            data : series
+          });
+        } else {
+          lineChart = $.jqplot('chartdiv', series, {
+            title : '',
+            axes : {
+              xaxis : {
+                label : 'Interval',
+                min : 0
+              },
+              yaxis : {
+                renderer : $.jqplot.LogAxisRenderer,
+                tickDistribution : 'power'
+              }
+            },
+            legend : {
+              show : true,
+              location : 'ne'
+            },
+            series : legend
+          });
+        }
+      }
+
+      function renderPieChart(name, data, title) {
+        if(pieCharts[name]) {
+          pieCharts[name].series[0].data = data;
+          pieCharts[name].resetAxesScale();
+          pieCharts[name].replot();
+        } else {
+          pieCharts[name] = jQuery.jqplot(name, [data], {
+            title : title,
+            seriesDefaults : {
+              // Make this a pie chart.
+              renderer : jQuery.jqplot.PieRenderer,
+              rendererOptions : {
+                // Put data labels on the pie slices.
+                // By default, labels show the percentage of the slice.
+                showDataLabels : true
+              }
+            },
+            legend : {
+              show : true,
+              location : 'e'
+            }
+          });
+        }
+      }
+
+      function updateLineChart() {
+        con.CallExecute('@AdHoc', ['select interval_id, sum(impressions) as impressions, sum(conversions) as conversions from network_impression_stats group by interval_id order by interval_id desc limit 500'], function results(response) {
+          var legend = [];
+          var series = [[], []];
+          var data = response.results[0].data;
+          updateLegend(legend, 'Impressions');
+          updateLegend(legend, 'Conversions');
+          data = data.reverse().slice(-500);
+          var index = 0;
+          data.forEach(function prepStreamData(row) {
+            var batchId = row[0];
+            var impressions = row[1];
+            var conversions = row[2];
+
+            series[0].push([index, impressions ? impressions : 0]);
+            series[1].push([index++, conversions ? conversions : 0]);
+          });
+          renderLineChart(legend, series);
+        });
+      }
+
+      function updateTotalTransactions() {
+        con.CallExecute('@AdHoc', ['select count(*) from log'], function results(response) {
+          var count = response.results[0].data[0][0];
+          $('#transactionCount').text(count);
+        });
+      }
+
+      function updatNetworkCharts() {
+        con.CallExecute('@AdHoc', ['select network, sum(impressions) as impressions, sum(conversions) as conversions, cost  from demographic_aggregation group by network, cost'], function results(response) {
+          var impressionsData = [];
+          var conversionsData = [];
+          var data = response.results[0].data;
+          var networkData = [];
+          var conversionsTotal = 0;
+          var impressionTotal = 0;
+
+          for(var i = 0; i < data.length; i++) {
+            var row = data[i];
+            var network = row[0];
+            var impressions = row[1];
+            var conversions = row[2];
+            networkRow = row.slice(0, -1);
+            networkData.push(networkRow);
+
+            networkRow.push((Math.floor((conversions / impressions) * 10000.0) / 100) + "%");
+            conversionsTotal += conversions;
+            impressionTotal += impressions;
+            impressionsData.push([network, impressions]);
+            conversionsData.push([network, conversions]);
+          }
+
+          for(var i = 0; i < data.length; i++) {
+            var row = data[i];
+            var network = row[0];
+            var impressions = row[1];
+            var conversions = row[2];
+            var cost = row[3];
+
+            networkRow = networkData[i];
+            networkRow.push((Math.floor((impressions / impressionTotal) * 10000.0) / 100) + "%");
+            networkRow.push((Math.floor((conversions / conversionsTotal) * 10000.0) / 100) + "%");
+
+            var totalCPM = Math.floor(((impressions / 1000) * cost) * 100) / 100;
+            var totalCPC = Math.floor(((totalCPM / conversions)) * 100) / 100;
+            row.push("$" + totalCPM);
+            row.push("$" + totalCPC);
+          }
+
+          renderPieChart("impressionsChart", impressionsData, "Impressions By Network");
+          renderPieChart("conversionsChart", conversionsData, "Conversions By Network");
+          updateRawTable(data, networkData);
+        });
+      }
+
+      var table;
+      var costTable;
+      function updateRawTable(data, networkData) {
+
+        table = $("#networkData").dataTable({
+          "bDestroy" : true,
+          "aaData" : networkData,
+          "aoColumns" : [{
+            "sTitle" : "Network"
+          }, {
+            "sTitle" : "Impressions"
+          }, {
+            "sTitle" : "Conversions"
+          }, {
+            "sTitle" : "Conversion %"
+          }, {
+            "sTitle" : "Total Impression %"
+          }, {
+            "sTitle" : "Total Conversions %"
+          }]
+        });
+
+        costTable = $("#networkCostData").dataTable({
+          "bDestroy" : true,
+          "aaData" : data,
+          "aoColumns" : [{
+            "sTitle" : "Network"
+          }, {
+            "sTitle" : "Impressions"
+          }, {
+            "sTitle" : "Conversions"
+          }, {
+            "sTitle" : "Cost per 1k"
+          }, {
+            "sTitle" : "CPM"
+          }, {
+            "sTitle" : "CPC"
+          }]
+        });
+      }
+
+      function updateDemographicStatTable(network) {
+        var tableName = '#' + network;
+        tableName = tableName.replace(/[\s!]/g, '');
+        var query = 'select network, count(*) from demographic_aggregation where network=\'' + network + '\' group by network;';
+        con.CallExecute('@AdHoc', [query], function results(response) {
+          var data = response.results[0].data[0][1];
+          $(tableName + 'Profiles').text(data);
+        });
+
+        con.CallExecute('@AdHoc', ['select sex, age, marital_status, income, education, occupation, impressions, conversions from demographic_aggregation where network=\'' + network + '\' order by conversions desc limit 10'], function results(response) {
+          var data = response.results[0].data;
+
+          $(tableName).dataTable({
+            "bDestroy" : true,
+            "bSort" : false,
+            "aaData" : data,
+            "aoColumns" : [{
+              "sTitle" : "Sex"
+            },{
+              "sTitle" : "Age"
+            }, {
+              "sTitle" : "Marital Status"
+            }, {
+              "sTitle" : "Income"
+            }, {
+              "sTitle" : "Education"
+            }, {
+              "sTitle" : "Occupation"
+            }, {
+              "sTitle" : "Impressions"
+            }, {
+              "sTitle" : "Conversions"
+            }]
+          });
+        });
+      }
+
+      function updateDemographicTables() {
+        networks.forEach(function queryDemographics(row) {
+          updateDemographicStatTable(row);
+        });
+      }
+
+      function getStats() {
+        updateLineChart();
+        updatNetworkCharts();
+        updateTotalTransactions();
+      }
+
+      function getDemographicStats() {
+        updateDemographicTables();
+      }
+
+      function startMainTab() {
+        tabIntervalHandle = setInterval(getStats, 1000);
+      }
+
+      function startDemographicTab() {
+        updateDemographicTables();
+        tabIntervalHandle = setInterval(getDemographicStats, 7000);
+      }
+
+
+      $(document).ready(function() {
+
+        $("#tabs").tabs();
+
+        $("#tabs").bind('tabsselect', function(event, ui) {
+          clearInterval(tabIntervalHandle);
+          var tab = ui.tab;
+          if(tab.hash === '#tabs-1') {
+            startMainTab();
+          } else if(tab.hash === '#tabs-2') {
+            startDemographicTab();
+          }
+        });
+
+        con = VoltDB.AddConnection('localhost', 8080, false, null, null, false, function(connection, success) {
+          startMainTab();
+        });
+
+      });
+    </script>
+  </body>
+</html>
