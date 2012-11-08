@@ -1,0 +1,20 @@
+<project>
+    <info>
+        <name>adlog</name>
+        <version>1</version>
+        <description>Demographic Analytics</description>
+    </info>
+    <database>
+        <schemas>
+            <schema path='ddl.sql' />
+        </schemas>
+        <!-- export>
+            <tables>
+                <table name="exportlogtable"/>
+            </tables>
+        </export -->
+        <!-- partitions>
+            <partition table='logtable' column='network'/>
+        </partitions -->
+    </database>
+</project>
