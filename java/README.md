@@ -10,6 +10,16 @@ Demonstrates a simple "upsert" stored procedure using multidimensional demograph
 ### Tweet Geolocation Simulator
 An application that uses a thematic map to show the distribution of hashtags across the globe. 
 
+### Games ###
+An online gaming platform simulation that tracks user session data, player scores, and leaderboards.
+
+### Stock Orders ###
+An app that demonstrates fast ingestion of equities orders and performs realtime analytics of top symbols and accounts by volume.  
+(Used in our Capital Markets webinars)
+
+### Stored Value Cards ###
+An app that simulates high velocity transaction processing of pre-authorization, purchase, and balance transfer transactions on debit or gift cards, while maintaining fully consistent balances.
+
 ## More Coming
 Many more applications coming soon. You'll soon see all of our code from our blogs appear here too.
 
