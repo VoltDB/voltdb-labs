@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<project>
+    <info>
+        <name>Stored Value Cards</name>
+        <version>1.0</version>
+        <description>Benchmark Example</description>
+    </info>
+    <database>
+        <schemas>
+            <schema path="ddl.sql" />
+        </schemas>
+        <procedures>
+          <procedure class="procedures.Authorize" />
+          <procedure class="procedures.Redeem" />
+          <procedure class="procedures.Transfer" />
+        </procedures>
+        <partitions>
+            <partition table="card_account" column="pan" />
+            <partition table="card_activity" column="pan" />
+        </partitions>
+    </database>
+</project>

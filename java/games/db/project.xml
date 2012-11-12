@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<project>
+    <info>
+        <name>Games</name>
+        <version>1.0</version>
+        <description>Online Games Benchmark</description>
+    </info>
+    <database>
+        <schemas>
+            <schema path="ddl.sql"/>
+        </schemas>
+        <procedures>
+          <procedure class="GAMES_SELECT_ALL">
+            <sql>
+              SELECT * FROM games;
+            </sql>
+          </procedure>
+          <procedure class="GET_MAX_PLAYER_ID">
+            <sql>
+              SELECT MAX(player_id) FROM players;
+            </sql>
+          </procedure>
+          <procedure class="INCREMENT_SCORE" partitioninfo="GAME_PLAYERS.player_id:2">
+            <sql>
+              UPDATE game_players SET score = score + ? WHERE game_id = ? AND player_id = ?;
+            </sql>
+          </procedure>
+          <procedure class="LEVEL_UP" partitioninfo="GAME_PLAYERS.player_id:1">
+            <sql>
+              UPDATE game_players SET current_level = current_level + 1 WHERE game_id = ? AND player_id = ?;
+            </sql>
+          </procedure>
+          <procedure class="END_SESSION" partitioninfo="GAME_PLAYERS.player_id:1">
+            <sql>
+              UPDATE game_players SET active_session = 0 WHERE game_id = ? AND player_id = ?;
+            </sql>
+          </procedure>
+          <procedure class="GAME_STATS">
+            <sql>
+              SELECT g.title, s.players, s.active_sessions
+              FROM games g, game_stats s
+              WHERE s.game_id = g.game_id
+              ORDER BY s.active_sessions;
+            </sql>
+          </procedure>
+          <procedure class="GAME_RANK_BY_SCORE">
+            <sql>
+              SELECT COUNT(*)
+              FROM game_players
+              WHERE game_id = ?
+              AND score > ? AND score &lt; 2147483647;
+            </sql>
+          </procedure>
+          <procedure class="GAME_LEADERS">
+            <sql>
+              SELECT title, full_name, score
+              FROM game_players gp, players p, games g
+              WHERE gp.game_id = ? AND gp.player_id = p.player_id AND gp.game_id = g.game_id
+              ORDER BY gp.score DESC, gp.player_id ASC
+              LIMIT 100;
+            </sql>
+          </procedure>
+          <!-- Java stored procs-->
+          <procedure class="procedures.NewSession" />
+        </procedures>
+        <partitions>
+            <partition table="players" column="player_id" />
+            <partition table="game_players" column="player_id" />
+        </partitions>
+    </database>
+</project>
