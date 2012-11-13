@@ -1,4 +1,12 @@
-This example includes a VoltDB database application, and a client application.
+# README for VoltDB stored value card application #
+
+This application performs high velocity transaction processing for stored value cards.  These transactions include:
+
+- Pre-Authorizations, where the available balance is checked if sufficient and then modified, but the purchase is not completed.
+- Purchase, where the previously-authorized purchase is completed
+- Transfer, where a balance transfer is made between two cards.
+
+The code is divided into two projects.  Under the "db" directory is the database project, which contains the schema, stored procedures and other configurations that are compiled into a catalog and run in a VoltDB database.  Under the "client" directory is a java client that loads a set of cards and then generates random card transactions a high velocity to simulate card activity.
 
 See below for instructions on running these applications.  For any questions, 
 please contact fieldengineering@voltdb.com.
@@ -52,35 +60,4 @@ You can run the ad-hoc query benchmark with:
 
 You can remove the compiled code with:
 ./run.sh clean
-
-
-Developer Notes
----------------
-To modify this example application for another file and table, you could make the following changes:
-
-DB app:
-db/ddl.sql - replace table definition, add additional DDL if needed
-db/src/*.java - create stored procedures 
-db/project.xml - modify for your table name, column name, procedure names
-	       - add single-SQL-statement stored procedures
-
-CLIENT app:
-client/run.sh - edit
-extend client/src/Loader.java, following the example of StocksLoader.java for a custom file loader
-extend client/src/GenericBenchmark.java, following the example of OrdersBenchmark for a custom benchmark
-
-
-Demo Notes
-----------
-The following stored procedures can be run from SQLCMD or Studio, during or after the benchmark:
-
-exec Top10VolStocks
-
-exec Top10VolAccts
-
-exec Top10VolAcctsForStock <symbol>
-
-exec SelectOrdersByAcctStock <acct_id> <symbol>
-
-
 

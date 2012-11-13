@@ -1,12 +1,15 @@
-This example includes a VoltDB database application, and a client application.
+# README for VoltDB stock orders application#
+
+This application performs a high velocity ingestion of equities order data and supports realtime analytic summaries of this order activity.
+
+The code is divided into two projects.  Under the "db" directory is the database project, which contains the schema, stored procedures and other configurations that are compiled into a catalog and run in a VoltDB database.  Under the "client" directory is a java client that loads the stock symbols and then generates random orders at a high velocity to simulate market activity.
 
 See below for instructions on running these applications.  For any questions, 
 please contact fieldengineering@voltdb.com.
 
 
-Database application
---------------------
-
+Database application: /db
+-------------------------
 The database application must be started first.  It can be run from the command line
 or the catalog file can be deployed using VoltDB Enterprise Manager which is
 provided with VoltDB Enterprise Edition.
@@ -28,8 +31,8 @@ are in Using VoltDB, Section 6.1, and all the options for the deploymen file are
 in Appendix D.
 
 
-Client application
-------------------
+Client application: /client
+---------------------------
 To build and run the database application:
   cd db
   ./run.sh
@@ -51,25 +54,9 @@ You can remove the compiled code with:
 ./run.sh clean
 
 
-Developer Notes
----------------
-To modify this example application for another file and table, you could make the following changes:
-
-DB app:
-db/ddl.sql - replace table definition, add additional DDL if needed
-db/src/*.java - create stored procedures 
-db/project.xml - modify for your table name, column name, procedure names
-	       - add single-SQL-statement stored procedures
-
-CLIENT app:
-client/run.sh - edit
-extend client/src/Loader.java, following the example of StocksLoader.java for a custom file loader
-extend client/src/GenericBenchmark.java, following the example of OrdersBenchmark for a custom benchmark
-
-
-Demo Notes
-----------
-The following stored procedures can be run from SQLCMD or Studio, during or after the benchmark:
+Demonstration Notes
+-------------------
+The following stored procedures show the results of realtime-calculated aggregations.  They can be run from SQLCMD or Studio while the client is running, or afterwards:
 
 exec Top10VolStocks
 
