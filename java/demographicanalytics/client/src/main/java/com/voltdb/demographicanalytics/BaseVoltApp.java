@@ -189,7 +189,7 @@ public abstract class BaseVoltApp {
         System.out.printf("%02d:%02d:%02d ", time / 3600, (time / 60) % 60,
                 time % 60);
         System.out.printf("Throughput %d/s, ", stats.getTxnThroughput());
-        System.out.printf("Aborts/Failures %d/%d, ",
+        System.out.printf("Aborts/Failures %d/%d%n ",
                 stats.getInvocationAborts(), stats.getInvocationErrors());
     }
 

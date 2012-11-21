@@ -150,14 +150,7 @@
       var networks = ['Slashdot', 'NY Times', 'Economist', 'WSJ', 'Facebook', 'Yahoo!'];
       var networkToTable = { }
 
-      function updateLegend(legend, name) {
-        legend.push({
-          label : name,
-          showMarker : false
-        });
-      }
-
-      function renderLineChart(legend, series) {
+      function renderLineChart(series) {
         if(lineChart) {
 
           lineChart.replot({
@@ -180,7 +173,13 @@
               show : true,
               location : 'ne'
             },
-            series : legend
+            series : [{
+              label : "Impressions",
+              showMarker : false
+            }, {
+              label : "Conversions",
+              showMarker : false
+            }]
           });
         }
       }
@@ -211,23 +210,20 @@
       }
 
       function updateLineChart() {
-        con.CallExecute('@AdHoc', ['select interval_id, sum(impressions) as impressions, sum(conversions) as conversions from network_impression_stats group by interval_id order by interval_id desc limit 500'], function results(response) {
-          var legend = [];
+        con.CallExecute('@AdHoc', ['select interval_id, sum(impressions) as impressions, sum(conversions) as conversions from network_impression_stats group by interval_id order by interval_id desc limit 200'], function results(response) {
           var series = [[], []];
           var data = response.results[0].data;
-          updateLegend(legend, 'Impressions');
-          updateLegend(legend, 'Conversions');
-          data = data.reverse().slice(-500);
           var index = 0;
-          data.forEach(function prepStreamData(row) {
+          data = data.slice(2).reverse();
+          data.forEach(function prepStreamData(row, index) {
             var batchId = row[0];
-            var impressions = row[1];
-            var conversions = row[2];
+            var impressions = row[1] + 1;
+            var conversions = row[2] + 1;
 
-            series[0].push([index, impressions ? impressions : 0]);
-            series[1].push([index++, conversions ? conversions : 0]);
+            series[0].push([index, impressions]);
+            series[1].push([index, conversions]);
           });
-          renderLineChart(legend, series);
+          renderLineChart(series);
         });
       }
 
@@ -291,6 +287,10 @@
 
         table = $("#networkData").dataTable({
           "bDestroy" : true,
+          "bSort" : false,
+          "bPaginate" : false,
+          "bFilter" : false,
+          "bInfo" : false,
           "aaData" : networkData,
           "aoColumns" : [{
             "sTitle" : "Network"
@@ -309,6 +309,10 @@
 
         costTable = $("#networkCostData").dataTable({
           "bDestroy" : true,
+          "bSort" : false,
+          "bPaginate" : false,
+          "bFilter" : false,
+          "bInfo" : false,
           "aaData" : data,
           "aoColumns" : [{
             "sTitle" : "Network"
@@ -341,23 +345,34 @@
           $(tableName).dataTable({
             "bDestroy" : true,
             "bSort" : false,
+            "bPaginate" : false,
+            "bFilter" : false,
+            "bInfo" : false,
             "aaData" : data,
             "aoColumns" : [{
-              "sTitle" : "Sex"
-            },{
-              "sTitle" : "Age"
+              "sTitle" : "Sex",
+              "sWidth" : "2%"
             }, {
-              "sTitle" : "Marital Status"
+              "sTitle" : "Age",
+              "sWidth" : "10%"
             }, {
-              "sTitle" : "Income"
+              "sTitle" : "Marital Status",
+              "sWidth" : "25%"
             }, {
-              "sTitle" : "Education"
+              "sTitle" : "Income",
+              "sWidth" : "10%"
             }, {
-              "sTitle" : "Occupation"
+              "sTitle" : "Education",
+              "sWidth" : "10%"
             }, {
-              "sTitle" : "Impressions"
+              "sTitle" : "Occupation",
+              "sWidth" : "25%"
             }, {
-              "sTitle" : "Conversions"
+              "sTitle" : "Impressions",
+              "sWidth" : "5%"
+            }, {
+              "sTitle" : "Conversions",
+              "sWidth" : "5%"
             }]
           });
         });

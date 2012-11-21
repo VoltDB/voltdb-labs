@@ -31,9 +31,9 @@ public class LogEntryFactory {
             for (AdLogEntry entry : entries) {
                 System.out.println(String.format(
                         "%d,%d,%s,%s,%s,%d,%s,%s,%s,%d,%s,%s,%s,%s", i,
-                        entry.getNetwork(), entry.getCost(), entry.getFirstName(),
-                        entry.getLastName(), entry.getAgeActual(),
-                        entry.getAge(), entry.getSex(),
+                        entry.getNetwork(), entry.getCost(),
+                        entry.getFirstName(), entry.getLastName(),
+                        entry.getAgeActual(), entry.getAge(), entry.getSex(),
                         entry.getMaritalStatus(), entry.getIncomeActual(),
                         entry.getIncome(), entry.getEducation(),
                         entry.getOccupation(), entry.isConversion()));
@@ -61,7 +61,6 @@ public class LogEntryFactory {
             "Lewis", "Walker", "Hall", "Allen", "Wright", "Scott", "Baker",
             "Roberts", "Torres", "Flores", "Rogers", "Ward", "Cruz", "Foster" };
 
-    
     List<NetworkProfile> profiles = new ArrayList<NetworkProfile>();
     Random rand;
 
@@ -79,10 +78,12 @@ public class LogEntryFactory {
         List<AdLogEntry> results = new ArrayList<AdLogEntry>();
 
         for (NetworkProfile profile : this.profiles) {
-            int batchSize = profile.lastBatch > 0 ? profile.lastBatch : 200;
-            batchSize *= rand.nextInt(profile.slopeRange) / 100.0;
-            batchSize++; // no zero size batches
-            batchSize = batchSize > 1000? 1000 : batchSize;
+            int batchSize = profile.lastBatch;
+            batchSize = Math.min(batchSize, rand.nextInt(5000));
+            int slopeDirection = ((float)rand.nextInt(profile.slopeRange) > profile.slopeRange/2.0 ? 1:-1);
+            batchSize += (slopeDirection * rand.nextInt(profile.slopeRange))*rand.nextInt(7);
+            //System.out.printf("\t\t%s %d %d%n", profile.network, slopeDirection, batchSize);
+            batchSize = (batchSize > 0 ? batchSize : 1); // no zero size batches'
             profile.lastBatch = batchSize;
 
             for (int i = 0; i < batchSize; i++) {
@@ -102,13 +103,17 @@ public class LogEntryFactory {
                 Education education = getEducation(profile);
 
                 Occupation occupation = getOccupation(profile);
-                boolean conversion = profile.conversionRange >= rand.nextInt(100);
-                results.add(new AdLogEntry(firstName, lastName, age, ageActual, sex,
-                        maritalStatus, income, incomeActual, education, occupation,
-                        profile.network, profile.getCost(), conversion));
+                boolean conversion = rand.nextInt(profile.conversionRange) >= rand
+                        .nextInt(batchSize);
+
+                results.add(new AdLogEntry(firstName, lastName, age, ageActual,
+                        sex, maritalStatus, income, incomeActual, education,
+                        occupation, profile.network, profile.getCost(),
+                        conversion));
             }
         }
-
+       // System.out.printf("%d %d %.2f%n", totalEntries, totalConversions,
+       //         ((float)totalConversions / (float)totalEntries));
         return results;
     }
 

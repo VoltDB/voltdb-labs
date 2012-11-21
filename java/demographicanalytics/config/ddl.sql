@@ -25,7 +25,7 @@ CREATE TABLE demographic_aggregation(
     income          VARCHAR(100)         NOT NULL,
     education       VARCHAR(100)         NOT NULL,
     occupation      VARCHAR(100)         NOT NULL,
-    cost            INTEGER         NOT NULL,
+    cost            INTEGER              NOT NULL,
     impressions     INTEGER              NOT NULL,
     conversions     INTEGER              NOT NULL,
     CONSTRAINT demographic_aggregation_idx PRIMARY KEY

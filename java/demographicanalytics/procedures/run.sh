@@ -33,6 +33,7 @@ HOST="localhost"
 
 # build an application catalog
 function catalog() {
+    rm ./$APPNAME.jar
     $VOLTCOMPILER ./target/classes ../config/project.xml ./$APPNAME.jar
     # stop if compilation fails
     if [ $? != 0 ]; then exit; fi
@@ -40,8 +41,8 @@ function catalog() {
 
 # run the voltdb server locally
 function server() {
-    # if a catalog doesn't exist, build one
-    if [ ! -f $APPNAME.jar ]; then catalog; fi
+    
+    catalog
     # run the server
     $VOLTDB create catalog ./$APPNAME.jar deployment ../config/deployment.xml \
         license $LICENSE host $HOST
