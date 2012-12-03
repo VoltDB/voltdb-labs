@@ -38,24 +38,8 @@ public class OrdersBenchmark extends GenericBenchmark {
         System.out.println(HORIZONTAL_RULE);
         GenericCallbackCounter.printProcedureResults("ORDERS.insert");
 
-        System.out.print("\n" + HORIZONTAL_RULE);
-        System.out.println(" Client Workload Statistics");
-        System.out.println(HORIZONTAL_RULE);
-        ClientStats stats = fullStatsContext.fetch().getStats();
-        System.out.printf("Average throughput:            %,9d txns/sec\n", stats.getTxnThroughput());
-        System.out.printf("Average latency:               %,9d ms\n", stats.getAverageLatency());
-        System.out.printf("95th percentile latency:       %,9d ms\n", stats.kPercentileLatency(.95));
-        System.out.printf("99th percentile latency:       %,9d ms\n", stats.kPercentileLatency(.99));
+        super.printResults();
 
-        System.out.print("\n" + HORIZONTAL_RULE);
-        System.out.println(" System Server Statistics");
-        System.out.println(HORIZONTAL_RULE);
-        if (config.autotune) {
-            System.out.printf("Targeted Internal Avg Latency: %,9d ms\n", config.latencytarget);
-        }
-        System.out.printf("Reported Internal Avg Latency: %,9d ms\n", stats.getAverageInternalLatency());
-
-        client.writeSummaryCSV(stats, config.statsfile);
     }
     
     public static void main(String[] args) throws Exception {
