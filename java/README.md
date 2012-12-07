@@ -20,6 +20,9 @@ An app that demonstrates fast ingestion of equities orders and performs realtime
 ### Stored Value Cards ###
 An app that simulates high velocity transaction processing of pre-authorization, purchase, and balance transfer transactions on debit or gift cards, while maintaining fully consistent balances.
 
+### Demographics Analytics
+An app that demonstrates real-time analytics against a live data stream of user data. The data is broken down into demographic groups which can be viewed using a browser.
+
 ## More Coming
 Many more applications coming soon. You'll soon see all of our code from our blogs appear here too.
 
