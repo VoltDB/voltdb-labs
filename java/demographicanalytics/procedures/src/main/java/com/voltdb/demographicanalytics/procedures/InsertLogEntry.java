@@ -33,6 +33,8 @@ import org.voltdb.VoltProcedure;
 import org.voltdb.VoltTable;
 
 /**
+ * A complicated stored procedure that inserts a new log entry, adds or updates
+ * it to the demographic rollup.
  * 
  * @author awilson
  * 
@@ -79,6 +81,24 @@ public class InsertLogEntry extends VoltProcedure {
 
     public final static TreeSet<String> tree = new TreeSet<String>();
 
+    /**
+     * The root stored procedure method that inserts a new demographic object.
+     * @param intervalId
+     * @param network
+     * @param cost
+     * @param firstName
+     * @param lastName
+     * @param ageActual
+     * @param incomeActual
+     * @param age
+     * @param income
+     * @param sex
+     * @param maritalStatus
+     * @param education
+     * @param occupation
+     * @param conversion
+     * @return
+     */
     public long run(int intervalId, String network, int cost, String firstName,
             String lastName, int ageActual, int incomeActual, String age,
             String income, String sex, String maritalStatus, String education,
@@ -88,6 +108,9 @@ public class InsertLogEntry extends VoltProcedure {
         if (highwater == INVALID) {
             insertHighwater(intervalId, network);
         } else if (highwater < intervalId) {
+            // only update a demogrpahic aggregation once we've moved on to a 
+            // new interval. Note, data coming in an old interval is not rolled
+            // up again.
             updateDemographicAggregation(highwater, network);
             updateHighwater(intervalId, network);
         }
@@ -99,7 +122,11 @@ public class InsertLogEntry extends VoltProcedure {
 
         return 1;
     }
-
+/**
+ * Pulls all the rows for a given interval.
+ * @param highwater
+ * @param network
+ */
     private void updateDemographicAggregation(int highwater, String network) {
         voltQueueSQL(GET_LOG_INTERVAL_STATISTICS, highwater, network);
         VoltTable[] logStats = voltExecuteSQL();
@@ -114,15 +141,28 @@ public class InsertLogEntry extends VoltProcedure {
             long impressions = logStats[0].getLong("impressions");
             long conversions = logStats[0].getLong("conversions");
             upsertDemographicAggregation(network, sex, age, maritalStatus,
-                    income, education, occupation, cost, impressions, conversions);
+                    income, education, occupation, cost, impressions,
+                    conversions);
 
         }
     }
-
+/**
+ * Performs the actual aggregation of data.
+ * @param network
+ * @param sex
+ * @param age
+ * @param maritalStatus
+ * @param income
+ * @param education
+ * @param occupation
+ * @param cost
+ * @param impressions
+ * @param conversions
+ */
     private void upsertDemographicAggregation(String network, String sex,
             String age, String maritalStatus, String income, String education,
             String occupation, long cost, long impressions, long conversions) {
-
+// This is a useful optimization to find a demographic group more quickly.
         String profileKey = getProfileKey(network, sex, age, maritalStatus,
                 income, education, occupation);
 
@@ -144,6 +184,19 @@ public class InsertLogEntry extends VoltProcedure {
         voltExecuteSQL();
     }
 
+    /**
+     * Converts a series of known demographic parameters into an SHA-1
+     * key that is indexed and can be looked up quickly. This reduces future 
+     * "WHERE" predicates to a single parameter.
+     * @param network
+     * @param sex
+     * @param age
+     * @param maritalStatus
+     * @param income
+     * @param education
+     * @param occupation
+     * @return
+     */
     private String getProfileKey(String network, String sex, String age,
             String maritalStatus, String income, String education,
             String occupation) {
@@ -163,6 +216,11 @@ public class InsertLogEntry extends VoltProcedure {
         return results;
     }
 
+    /**
+     * Sets the last interval that was rolled up.
+     * @param intervalId
+     * @param network
+     */
     private void insertHighwater(int intervalId, String network) {
         voltQueueSQL(INSERT_LOG_HIGHWATER, intervalId, network);
         voltExecuteSQL();
