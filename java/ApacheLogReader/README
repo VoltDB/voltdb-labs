@@ -5,16 +5,14 @@ This sample application demonstrates how to write an application that can read
 and store apache log file information. The tables are organized to partition the
 data based on an interval, a 15 minute period, that can be easily queried to see
 how often an asset file is called, its size and the bandwidth utilization. This
-can be done on a single asset or against all assets.
+can be done on a single asset or against all assets. The application will display 
+apache bandwidth statistics and VoltDB throughput statistics.
 
 VoltDB Requirements
 ===================
 Sample requires VoltDB 2.8.4 or higher.
 Maven 2
 
-Running The Sample
-==================
-The application requires very little to run.
 
 Setup
 =====
