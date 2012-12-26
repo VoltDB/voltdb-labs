@@ -1,4 +1,4 @@
-package com.voltdb.demographicanalytics;
+package com.voltdb.apachelogreader;
 
 /* This file is part of VoltDB.
  * Copyright (C) 2008-2012 VoltDB Inc.
@@ -38,7 +38,7 @@ import org.voltdb.client.ClientStats;
 import org.voltdb.client.ClientStatsContext;
 import org.voltdb.client.NoConnectionsException;
 
-import com.voltdb.demographicanalytics.configuration.SampleConfiguration;
+import com.voltdb.apachelogreader.configuration.SampleConfiguration;
 
 
 /**
@@ -68,6 +68,8 @@ public abstract class BaseVoltApp {
 
         this.periodicStatsContext = client.createStatsContext();
         this.fullStatsContext = client.createStatsContext();
+        
+        
     }
 
     public Client initClient(SampleConfiguration config) {
@@ -158,9 +160,17 @@ public abstract class BaseVoltApp {
         timer = new Timer();
         this.benchmarkStartTS = System.currentTimeMillis();
         TimerTask statsPrinting = new TimerTask() {
+            boolean inWarmup = true;
+            
             @Override
             public void run() {
-                printStatistics();
+                if ( !inWarmup ) {
+                    printStatistics();
+                } else {
+                    inWarmup = false;
+                    periodicStatsContext.fetchAndResetBaseline();
+                    fullStatsContext.fetchAndResetBaseline();
+                }
             }
         };
         timer.scheduleAtFixedRate(statsPrinting, config.displayinterval * 1000,
@@ -189,7 +199,7 @@ public abstract class BaseVoltApp {
         System.out.printf("%02d:%02d:%02d ", time / 3600, (time / 60) % 60,
                 time % 60);
         System.out.printf("Throughput %d/s, ", stats.getTxnThroughput());
-        System.out.printf("Aborts/Failures %d/%d%n ",
+        System.out.printf("Aborts/Failures %d/%d%n",
                 stats.getInvocationAborts(), stats.getInvocationErrors());
     }
 
@@ -204,9 +214,9 @@ public abstract class BaseVoltApp {
         schedulePeriodicStats();
 
         this.execute();
-
         stopPeriodicStats();
         this.closeConnections();
+        
     }
 
     public Client getClient() {

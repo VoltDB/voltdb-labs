@@ -6,14 +6,15 @@ public enum Occupation {
     WHITE_COLLAR (2, "White Collar"),
     AGRICULTURAL (3, "Agriculture"),
     MILITARY (4, "Military");
-    
+
     int status = 0;
     String name;
     Occupation(int value, String name) {
         this.status = value;
         this.name = name;
     }
-    
+
+    @Override
     public String toString() {
         return this.name;
     }

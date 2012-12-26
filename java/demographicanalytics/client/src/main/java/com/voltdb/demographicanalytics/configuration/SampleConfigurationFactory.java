@@ -32,12 +32,12 @@ package com.voltdb.demographicanalytics.configuration;
 public class SampleConfigurationFactory {
 
     final static SampleConfiguration appConfig = new SampleConfiguration();
-    
+
     public static SampleConfiguration getConfiguration(String[] args) {
         appConfig.parse("ExpectationSample", args);
         return appConfig;
     }
-    
+
     public static SampleConfiguration getConfiguration() {
         return appConfig;
     }

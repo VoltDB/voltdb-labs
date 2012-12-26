@@ -40,7 +40,7 @@ import com.voltdb.demographicanalytics.vo.logentry.NetworkProfile;
  *
  */
 public class NetworkConfigJSON {
-    
+
     SampleConfiguration config;
 
     public NetworkConfigJSON(SampleConfiguration config) {
@@ -54,7 +54,7 @@ public class NetworkConfigJSON {
         }
         Gson gson = new Gson();
         Type listType = new TypeToken<List<NetworkProfile>>() {}.getType();
-        
+
         BufferedReader reader = new BufferedReader( new FileReader(cfgFile));
         List<NetworkProfile> profiles = gson.fromJson(reader, listType);
         reader.close();

@@ -21,36 +21,25 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.voltdb.demographicanalytics.configuration;
 
-import org.voltdb.CLIConfig;
+package com.voltdb.apachelogreader.configuration;
+
 /**
- * Command line parser
- * This sample only needs the server.
+ * Creates an instance of application's configuration
  * @author awilson
  *
  */
-public class SampleConfiguration extends CLIConfig {
+public class SampleConfigurationFactory {
 
-    @Option(desc = "Comma separated list volt servers to conenct to. server[:port]")
-    public String servers = "localhost:21212";
+    final static SampleConfiguration appConfig = new SampleConfiguration();
 
-    @Option(desc = "Volt user name")
-    public String user = "";
-
-    @Option(desc = "Volt password")
-    public String password = "";
-
-    @Option(desc = "How often to display transaction statistics.")
-    public int displayinterval = 5;
-
-    @Option(desc = "Configuration file JSON config file.")
-    public String configfile = "default.json";
-
-    public SampleConfiguration() {
+    public static SampleConfiguration getConfiguration(String[] args) {
+        appConfig.parse("ApacheLogSimulator", args);
+        return appConfig;
     }
 
-    @Override
-    public void validate() {
+    public static SampleConfiguration getConfiguration() {
+        return appConfig;
     }
+
 }

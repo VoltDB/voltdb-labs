@@ -36,18 +36,19 @@ public enum Age {
     RANGE_65TO74 (5, "65 to 74"),
     RANGE_74TO99 (6, "75 to 99"),
     RANGE_100 (7, "100 or older");
-    
+
     int age = 0;
     String name;
     Age(int age, String name) {
         this.age = age;
         this.name = name;
     }
-    
+
+    @Override
     public String toString() {
         return this.name;
     }
-    
+
     public final static Age getAge(int value) {
         Age result = null;
         if ( value < 12 ) {
@@ -67,7 +68,7 @@ public enum Age {
         } else {
             result = RANGE_100;
         }
-        
+
         return result;
     }
 }

@@ -35,9 +35,9 @@ import org.voltdb.VoltTable;
 /**
  * A complicated stored procedure that inserts a new log entry, adds or updates
  * it to the demographic rollup.
- * 
+ *
  * @author awilson
- * 
+ *
  */
 @ProcInfo(partitionInfo = "log.network:1", singlePartition = true)
 public class InsertLogEntry extends VoltProcedure {
@@ -108,7 +108,7 @@ public class InsertLogEntry extends VoltProcedure {
         if (highwater == INVALID) {
             insertHighwater(intervalId, network);
         } else if (highwater < intervalId) {
-            // only update a demogrpahic aggregation once we've moved on to a 
+            // only update a demogrpahic aggregation once we've moved on to a
             // new interval. Note, data coming in an old interval is not rolled
             // up again.
             updateDemographicAggregation(highwater, network);
@@ -186,7 +186,7 @@ public class InsertLogEntry extends VoltProcedure {
 
     /**
      * Converts a series of known demographic parameters into an SHA-1
-     * key that is indexed and can be looked up quickly. This reduces future 
+     * key that is indexed and can be looked up quickly. This reduces future
      * "WHERE" predicates to a single parameter.
      * @param network
      * @param sex

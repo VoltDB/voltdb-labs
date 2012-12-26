@@ -23,7 +23,7 @@
 package com.voltdb.demographicanalytics.vo.logentry;
 
 /**
- * Creates a log entry for a person visiting a site and viewing some kind of ad 
+ * Creates a log entry for a person visiting a site and viewing some kind of ad
  * or content that can go through a conversion.
  * @author awilson
  *
@@ -258,6 +258,7 @@ public class AdLogEntry {
         this.cost = cost;
     }
 
+    @Override
     public String toString() {
         return String.format("%s,%s,%s,%s,%s,%s %s,%s %s,%s,%s", firstName,
                 lastName, ageActual, incomeActual, age, sex, maritalStatus,

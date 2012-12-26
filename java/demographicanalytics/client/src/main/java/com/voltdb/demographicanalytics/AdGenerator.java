@@ -41,16 +41,16 @@ import com.voltdb.demographicanalytics.vo.logentry.LogEntryFactory;
 import com.voltdb.demographicanalytics.vo.logentry.NetworkProfile;
 
 /**
- * Executes a process of adding new log entries to a log table and then 
+ * Executes a process of adding new log entries to a log table and then
  * facilitating analytics against those entries.
  * @author awilson
- * 
+ *
  */
 public class AdGenerator extends BaseVoltApp {
 
     /**
      * @param args
-     * 
+     *
      */
     public static void main(String[] args) {
         SampleConfiguration config = SampleConfigurationFactory
@@ -101,7 +101,7 @@ public class AdGenerator extends BaseVoltApp {
         List<AdLogEntry> entries = factory.getNextBatch();
         for (AdLogEntry entry : entries) {
             try {
-                
+
                 this.client.callProcedure(new NullCallback(), "InsertLogEntry",
                         batch, entry.getNetwork(), entry.getCost(), entry
                                 .getFirstName(), entry.getLastName(), entry

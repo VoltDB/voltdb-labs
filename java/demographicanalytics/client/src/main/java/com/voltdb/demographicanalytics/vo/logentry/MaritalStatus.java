@@ -33,14 +33,15 @@ public enum MaritalStatus {
     DIVORCED (2, "Divorced"),
     LIVING_TOGETHER (3, "Living together"),
     WIDOWED (4, "Widowed");
-    
+
     int status = 0;
     String name;
     MaritalStatus(int value, String name) {
         this.status = value;
         this.name = name;
     }
-    
+
+    @Override
     public String toString() {
         return this.name;
     }

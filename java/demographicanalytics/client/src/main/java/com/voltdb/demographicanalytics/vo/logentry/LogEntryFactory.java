@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 /**
- * Creates a new log entry based upon the demographic parameters set in 
+ * Creates a new log entry based upon the demographic parameters set in
  * the NetworkProfile JSON config file.
  * @author awilson
  *
@@ -107,7 +107,7 @@ public class LogEntryFactory {
         for (NetworkProfile profile : this.profiles) {
             int batchSize = profile.lastBatch;
             batchSize = Math.min(batchSize, rand.nextInt(5000));
-            int slopeDirection = ((float)rand.nextInt(profile.slopeRange) > profile.slopeRange/2.0 ? 1:-1);
+            int slopeDirection = (rand.nextInt(profile.slopeRange) > profile.slopeRange/2.0 ? 1:-1);
             batchSize += (slopeDirection * rand.nextInt(profile.slopeRange))*rand.nextInt(7);
             //System.out.printf("\t\t%s %d %d%n", profile.network, slopeDirection, batchSize);
             batchSize = (batchSize > 0 ? batchSize : 1); // no zero size batches'

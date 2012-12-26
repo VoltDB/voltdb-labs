@@ -34,7 +34,7 @@ public enum Income {
     RANGE_50TO75K (50000,74999, "$50000 to $74999"),
     RANGE_75KTO100K (75000,99999, "$75000 to $99999"),
     RANGE_100K (100000,999999, "Over $100000");
-    
+
     int min = 0;
     int max = 0;
     String name;
@@ -43,23 +43,24 @@ public enum Income {
         this.max = max;
         this.name = name;
     }
-    
+
     public int getMin() {
         return this.min;
     }
-    
+
     public int getMax() {
         return this.max;
     }
-    
+
     public int getRange() {
         return this.getMax() - this.getMin();
     }
-    
+
+    @Override
     public String toString() {
         return name;
     }
-    
+
     public final static Income getIncome(int value) {
         Income result = null;
         if ( value < 25000 ) {
@@ -75,10 +76,10 @@ public enum Income {
         } else {
             result = RANGE_100K;
         }
-        
+
         return result;
     }
-    
+
     public final static Income getIncomeByIndex(int value) {
         return Income.values()[value];
     }

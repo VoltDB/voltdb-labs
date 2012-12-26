@@ -20,37 +20,21 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
+package com.voltdb.apachelogreader.vo.logentry;
 
-package com.voltdb.demographicanalytics.configuration;
-
-import org.voltdb.CLIConfig;
 /**
- * Command line parser
- * This sample only needs the server.
+ * Used in managing the name and size of an asset.
  * @author awilson
  *
+ * @param <T1>
+ * @param <T2>
  */
-public class SampleConfiguration extends CLIConfig {
-
-    @Option(desc = "Comma separated list volt servers to conenct to. server[:port]")
-    public String servers = "localhost:21212";
-
-    @Option(desc = "Volt user name")
-    public String user = "";
-
-    @Option(desc = "Volt password")
-    public String password = "";
-
-    @Option(desc = "How often to display transaction statistics.")
-    public int displayinterval = 5;
-
-    @Option(desc = "Configuration file JSON config file.")
-    public String configfile = "default.json";
-
-    public SampleConfiguration() {
-    }
-
-    @Override
-    public void validate() {
+public class Pair<T1, T2> {
+    final public T1 asset;
+    final public T2 size;
+    
+    public Pair(T1 asset, T2 size) {
+        this.asset = asset;
+        this.size = size;
     }
 }

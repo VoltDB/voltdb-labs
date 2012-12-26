@@ -21,7 +21,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.voltdb.demographicanalytics.configuration;
+package com.voltdb.apachelogreader.configuration;
 
 import org.voltdb.CLIConfig;
 /**
@@ -44,8 +44,8 @@ public class SampleConfiguration extends CLIConfig {
     @Option(desc = "How often to display transaction statistics.")
     public int displayinterval = 5;
 
-    @Option(desc = "Configuration file JSON config file.")
-    public String configfile = "default.json";
+    @Option(desc = "Runtime in seconds.")
+    public int runtime = 120;
 
     public SampleConfiguration() {
     }

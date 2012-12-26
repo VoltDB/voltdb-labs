@@ -1,0 +1,12 @@
+<project>
+    <info>
+        <name>apachelog</name>
+        <version>1</version>
+        <description>Apache Log Analytics</description>
+    </info>
+    <database>
+        <schemas>
+            <schema path='ddl.sql' />
+        </schemas>
+    </database>
+</project>

@@ -33,14 +33,15 @@ public enum Education {
     SOME_COLLEGE (2, "Some College"),
     COLLEGE_GRADUATE (3, "College Graduate"),
     POSTGRADUATE (4, "Postgraduate");
-    
+
     int status = 0;
     String name;
     Education(int value, String name) {
         this.status = value;
         this.name = name;
     }
-    
+
+    @Override
     public String toString() {
         return this.name;
     }
