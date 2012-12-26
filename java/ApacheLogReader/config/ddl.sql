@@ -22,6 +22,7 @@ PARTITION TABLE log ON COLUMN interval_id;
 PARTITION TABLE log_fields ON COLUMN interval_id;
 
 CREATE PROCEDURE FROM CLASS com.voltdb.apachelogreader.procedures.InsertLogEntry;
+CREATE PROCEDURE GetUtilizationStats AS select interval_id, sum(total_assets) as total_assets, sum(total_size) as total_size  from bandwidth_stats group by interval_id order by interval_id desc limit 20;
 
 CREATE VIEW bandwidth_stats (
     interval_id,

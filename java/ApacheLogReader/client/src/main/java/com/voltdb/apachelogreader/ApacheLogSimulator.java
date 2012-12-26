@@ -42,11 +42,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.voltdb.VoltTable;
+import org.voltdb.VoltType;
 import org.voltdb.client.ClientResponse;
 import org.voltdb.client.ClientStats;
 import org.voltdb.client.NoConnectionsException;
 import org.voltdb.client.NullCallback;
 import org.voltdb.client.ProcCallException;
+import org.voltdb.client.ProcedureCallback;
 
 import com.voltdb.apachelogreader.configuration.SampleConfiguration;
 import com.voltdb.apachelogreader.configuration.SampleConfigurationFactory;
@@ -271,4 +274,74 @@ public class ApacheLogSimulator extends BaseVoltApp {
         System.out.println(HORIZONTAL_RULE);
 
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.voltdb.apachelogreader.BaseVoltApp#printStatistics()
+     */
+    @Override
+    public synchronized void printStatistics() {
+        try {
+            client.callProcedure(new UtilizationCallback(),
+                    "GetUtilizationStats");
+        } catch (Exception e) {
+            System.out
+                    .println("Error occurred trying to get utilization statistics");
+            e.printStackTrace();
+        }
+        super.printStatistics();
+    }
+
+    class UtilizationCallback implements ProcedureCallback {
+
+        @Override
+        public void clientCallback(ClientResponse cr) throws Exception {
+            if (cr.getStatus() == ClientResponse.SUCCESS) {
+                VoltTable[] tables = cr.getResults();
+                if (tables == null || tables.length == 0) {
+                    System.out
+                            .println("An error occurred in which the query executed but did not return any stats");
+                } else {
+                    System.out
+                            .println("Interval       Files Downloaded               Total Bytes");
+                    System.out
+                            .println("---------------------------------------------------------");
+                    while (tables[0].advanceRow()) {
+                        Integer interval = (Integer) tables[0].get(0,
+                                VoltType.INTEGER);
+                        Integer downloads = (Integer) tables[0].get(1,
+                                VoltType.INTEGER);
+                        Integer bytes = (Integer) tables[0].get(2,
+                                VoltType.INTEGER);
+
+                        String intervalString = interval.toString();
+                        String downloadsString = downloads.toString();
+                        String bytesString = bytes.toString();
+                        
+                        String intervalPadding = getPadding(23 - downloadsString
+                                        .length());
+                        String downloadPadding = getPadding( 26 - bytesString.length());
+                        
+
+                        System.out.printf(" %s%s%s%s%s %n", intervalString,
+                                intervalPadding, downloadsString,
+                                downloadPadding, bytesString);
+                    }
+
+                }
+            } else {
+                System.out
+                        .println("An error has occurred getting bandwith stats.");
+            }
+
+        }
+
+        private String getPadding(int padLength) {
+            char[] pad = new char[padLength];
+            Arrays.fill(pad, ' ');
+            return new String(pad);
+        }
+    }
+
 }
