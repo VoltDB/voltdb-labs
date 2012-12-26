@@ -23,6 +23,10 @@ An app that simulates high velocity transaction processing of pre-authorization,
 ### Demographics Analytics
 An app that demonstrates real-time analytics against a live data stream of user data. The data is broken down into demographic groups which can be viewed using a browser.
 
+### Apache Log Analytics
+An app that generates and stores an apache log file. The data is setup to save the raw log data and a refined version. The refined version keeps track of assets and the size for a given interval so that it can be used to track hit counts and bandwidth utilization.
+
+
 ## More Coming
 Many more applications coming soon. You'll soon see all of our code from our blogs appear here too.
 
