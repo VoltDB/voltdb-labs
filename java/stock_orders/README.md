@@ -33,9 +33,10 @@ in Appendix D.
 
 Client application: /client
 ---------------------------
-To build and run the database application:
+To build and run the client:
   cd db
   ./run.sh
+(this is a default setting, you can be more precise using the commands below)
 
 Optionally, you can just compile with the following commands
   ./run.sh srccompile

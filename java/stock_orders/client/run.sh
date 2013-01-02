@@ -3,7 +3,11 @@
 APPNAME="stocks"
 
 if [ -z $VOLTDB_HOME ]; then
-    echo "looking for VoltDB under home directory"
+    export VOLTDB_HOME=`cd ~/voltdb-* && pwd`
+    echo "VOLTDB_HOME was not set... using $VOLTDB_HOME"
+fi
+if [ ! -d $VOLTDB_HOME ]; then
+    echo "VOLTDB_HOME was set to $VOLTDB_HOME, but that directory does not exist..."
     export VOLTDB_HOME=`cd ~/voltdb-* && pwd`
     echo "using $VOLTDB_HOME"
 fi
@@ -57,12 +61,6 @@ function init-shanghai() {
         --servers=$SERVERS \
         --filename=data/shanghai.txt \
         --skiplines=1
-}
-
-function jdbc-test() {
-    srccompile
-    java -classpath obj:$CLASSPATH:obj -Dlog4j.configuration=file://$LOG4J \
-	client.JDBCTest
 }
 
 # EDIT BELOW

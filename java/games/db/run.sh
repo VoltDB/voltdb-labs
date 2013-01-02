@@ -1,15 +1,22 @@
 #!/usr/bin/env bash
 
 APPNAME="games"
-VOLTPATH=`cd ~/voltdb-* && pwd`
-CLASSPATH="`ls -1 $VOLTPATH/voltdb/voltdb-*.jar`:`ls -1 $VOLTPATH/lib/*.jar | tr '\n' ':'`"
-if [ -d lib ]; then
-  CLASSPATH="$CLASSPATH:`ls -1 lib/*.jar | tr '\n' ':'`"
+
+if [ -z $VOLTDB_HOME ]; then
+    export VOLTDB_HOME=`cd ~/voltdb-* && pwd`
+    echo "VOLTDB_HOME was not set... using $VOLTDB_HOME"
 fi
-VOLTDB="$VOLTPATH/bin/voltdb"
-VOLTCOMPILER="$VOLTPATH/bin/voltcompiler"
-LOG4J="$VOLTPATH/voltdb/log4j.xml"
-LICENSE="$VOLTPATH/voltdb/license.xml"
+if [ ! -d $VOLTDB_HOME ]; then
+    echo "VOLTDB_HOME was set to $VOLTDB_HOME, but that directory does not exist..."
+    export VOLTDB_HOME=`cd ~/voltdb-* && pwd`
+    echo "using $VOLTDB_HOME"
+fi
+
+CLASSPATH="`ls -1 $VOLTDB_HOME/voltdb/voltdb-*.jar`:`ls -1 $VOLTDB_HOME/lib/*.jar | tr '\n' ':'`"
+VOLTDB="$VOLTDB_HOME/bin/voltdb"
+VOLTCOMPILER="$VOLTDB_HOME/bin/voltcompiler"
+LOG4J="$VOLTDB_HOME/voltdb/log4j.xml"
+LICENSE="$VOLTDB_HOME/voltdb/license.xml"
 LEADER="localhost"
 
 # remove build artifacts
@@ -41,25 +48,6 @@ function server() {
     # run the server
     $VOLTDB create catalog $APPNAME.jar deployment deployment.xml \
         license $LICENSE leader $LEADER
-}
-
-# run the voltdb server locally
-function durable-server() {
-    # if a catalog doesn't exist, build one
-    if [ ! -f $APPNAME.jar ]; then catalog; fi
-    # run the server
-    $VOLTDB start catalog $APPNAME.jar deployment durable-deployment.xml \
-        license $LICENSE leader $LEADER
-}
-
-function csv-snapshot() {
-    snapshot_name="backup"
-    snapshot_dir="csv-snapshot"
-    curr_dir=`pwd`
-    new_dir=${curr_dir}/${snapshot_name}
-    mkdir -p $new_dir
-    echo "Taking a snapshot named ${snapshot_name}.  Will be written to ${new_dir}"
-    echo "exec @SnapshotSave '{uripath:\"file://${new_dir}\",nonce:\"${snapshot_name}\",block:true,format:\"csv\"}'" | $VOLTPATH/bin/sqlcmd
 }
 
 function help() {

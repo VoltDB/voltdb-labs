@@ -41,30 +41,20 @@ You can remove the compiled code with:
   ./run.sh clean
 
 To configure for more than 1 node, edit the deployment.xml file.  Basic instructions
-are in Using VoltDB, Section 6.1, and all the options for the deploymen file are described
+are in Using VoltDB, Section 6.1, and all the options for the deployment file are described
 in Appendix D.
 
 Client application: /client
 ------------------
-To build and run the database application:
+To build and run the client:
   cd db
   ./run.sh
 
 Optionally, you can just compile with the following commands
   ./run.sh srccompile
 
-Optionally, you can load stocks for us or shanghai with one of the following commands:
-  ./run.sh init-us                        
-  ./run.sh init-shanghai
-
-You can run the benchmark with:
-  ./run.sh benchmark
-
 You may want to edit the parameters for the benchmark.  To do this, edit the run.sh file, under
 the section "function benchmark()".
-
-You can run the ad-hoc query benchmark with:
-  ./run.sh adhoc-benchmark
 
 You can remove the compiled code with:
 ./run.sh clean

@@ -3,7 +3,11 @@
 APPNAME="stocks"
 
 if [ -z $VOLTDB_HOME ]; then
-    echo "looking for VoltDB under home directory"
+    export VOLTDB_HOME=`cd ~/voltdb-* && pwd`
+    echo "VOLTDB_HOME was not set... using $VOLTDB_HOME"
+fi
+if [ ! -d $VOLTDB_HOME ]; then
+    echo "VOLTDB_HOME was set to $VOLTDB_HOME, but that directory does not exist..."
     export VOLTDB_HOME=`cd ~/voltdb-* && pwd`
     echo "using $VOLTDB_HOME"
 fi
@@ -12,6 +16,7 @@ CLASSPATH="`ls -1 $VOLTDB_HOME/voltdb/voltdb-*.jar`:`ls -1 $VOLTDB_HOME/lib/*.ja
 if [ -d lib ]; then
   CLASSPATH="$CLASSPATH:`ls -1 lib/*.jar | tr '\n' ':'`"
 fi
+echo "using CLASSPATH $CLASSPATH"
 VOLTDB="$VOLTDB_HOME/bin/voltdb"
 VOLTCOMPILER="$VOLTDB_HOME/bin/voltcompiler"
 LOG4J="$VOLTDB_HOME/voltdb/log4j.xml"

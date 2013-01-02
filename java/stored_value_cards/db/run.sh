@@ -3,7 +3,11 @@
 APPNAME="sv_cards"
 
 if [ -z $VOLTDB_HOME ]; then
-    echo "looking for VoltDB under home directory"
+    export VOLTDB_HOME=`cd ~/voltdb-* && pwd`
+    echo "VOLTDB_HOME was not set... using $VOLTDB_HOME"
+fi
+if [ ! -d $VOLTDB_HOME ]; then
+    echo "VOLTDB_HOME was set to $VOLTDB_HOME, but that directory does not exist..."
     export VOLTDB_HOME=`cd ~/voltdb-* && pwd`
     echo "using $VOLTDB_HOME"
 fi
@@ -47,25 +51,6 @@ function server() {
     # run the server
     $VOLTDB create catalog $APPNAME.jar deployment deployment.xml \
         license $LICENSE leader $LEADER
-}
-
-# run the voltdb server locally
-function durable-server() {
-    # if a catalog doesn't exist, build one
-    if [ ! -f $APPNAME.jar ]; then catalog; fi
-    # run the server
-    $VOLTDB start catalog $APPNAME.jar deployment durable-deployment.xml \
-        license $LICENSE leader $LEADER
-}
-
-function csv-snapshot() {
-    snapshot_name="backup"
-    snapshot_dir="csv-snapshot"
-    curr_dir=`pwd`
-    new_dir=${curr_dir}/${snapshot_name}
-    mkdir -p $new_dir
-    echo "Taking a snapshot named ${snapshot_name}.  Will be written to ${new_dir}"
-    echo "exec @SnapshotSave '{uripath:\"file://${new_dir}\",nonce:\"${snapshot_name}\",block:true,format:\"csv\"}'" | $VOLTPATH/bin/sqlcmd
 }
 
 function help() {

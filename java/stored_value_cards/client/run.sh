@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
 if [ -z $VOLTDB_HOME ]; then
-    echo "looking for VoltDB under home directory"
+    export VOLTDB_HOME=`cd ~/voltdb-* && pwd`
+    echo "VOLTDB_HOME was not set... using $VOLTDB_HOME"
+fi
+if [ ! -d $VOLTDB_HOME ]; then
+    echo "VOLTDB_HOME was set to $VOLTDB_HOME, but that directory does not exist..."
     export VOLTDB_HOME=`cd ~/voltdb-* && pwd`
     echo "using $VOLTDB_HOME"
 fi
@@ -28,15 +32,6 @@ function srccompile() {
         src/*.java
     # stop if compilation fails
     if [ $? != 0 ]; then exit; fi
-}
-
-function init-us() {
-    srccompile
-    java -classpath obj:$CLASSPATH:obj -Dlog4j.configuration=file://$LOG4J \
-	client.ExampleLoader \
-        --servers=$SERVERS \
-        --filename=data/NYSE.csv \
-        --skiplines=1
 }
 
 # EDIT BELOW

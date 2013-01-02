@@ -45,18 +45,11 @@ To build and run the database application:
 Optionally, you can just compile with the following commands
   ./run.sh srccompile
 
-Optionally, you can load stocks for us or shanghai with one of the following commands:
-  ./run.sh init-us                        
-  ./run.sh init-shanghai
-
 You can run the benchmark with:
   ./run.sh benchmark
 
 You may want to edit the parameters for the benchmark.  To do this, edit the run.sh file, under
 the section "function benchmark()".
-
-You can run the ad-hoc query benchmark with:
-  ./run.sh adhoc-benchmark
 
 You can remove the compiled code with:
 ./run.sh clean
