@@ -1,0 +1,12 @@
+<project>
+    <info>
+        <name>flickrreader</name>
+        <version>1</version>
+        <description>Flickr Reader: Reports tag trends</description>
+    </info>
+    <database>
+        <schemas>
+            <schema path='ddl.sql' />
+        </schemas>
+    </database>
+</project>
