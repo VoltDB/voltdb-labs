@@ -26,6 +26,8 @@ An app that demonstrates real-time analytics against a live data stream of user 
 ### Apache Log Analytics
 An app that generates and stores an apache log file. The data is setup to save the raw log data and a refined version. The refined version keeps track of assets and the size for a given interval so that it can be used to track hit counts and bandwidth utilization.
 
+###Flickr Feed Reader
+Reads a real Flickr JSON feed and stores the results in Volt. Volt extracts all the tags associated with the image and creates a leaderboard. The application queries Flickr about once per second to avoid feed limits and displays the results of the volt query every two seconds.
 
 ## More Coming
 Many more applications coming soon. You'll soon see all of our code from our blogs appear here too.
