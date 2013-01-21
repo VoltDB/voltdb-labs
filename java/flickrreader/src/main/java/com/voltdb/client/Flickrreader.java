@@ -199,7 +199,7 @@ public class Flickrreader extends BaseVoltApp {
          */
         protected String getRawFeed() throws MalformedURLException, IOException {
             URL url = new URL(
-                    "http://api.flickr.com/services/feeds/photos_public.gne?format=json");
+                    "http://api.flickr.com/services/feeds/photos_public.gne?format=json&nojsoncallback=1");
 
             URLConnection connection = url.openConnection();
 
@@ -210,11 +210,8 @@ public class Flickrreader extends BaseVoltApp {
             while ((tmp = reader.read()) > -1) {
                 sb.append((char) tmp);
             }
-            // trim the first and last few bytes of the feed to avoid creating a
-            // top level VO that contains an array of JsonFlickrFeed with a
-            // length of 1
-            String results = sb.substring(15, sb.length() - 1);
-            return results;
+            
+            return sb.toString();
         }
 
     }
