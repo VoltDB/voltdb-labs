@@ -25,10 +25,6 @@ import org.voltdb.types.TimestampType;
  * metadata, and correct use the Volt query interface.
  */
 
-@ProcInfo(
-    partitionInfo = "card_activity.pan: 0",
-    singlePartition = true
-)
 public class Redeem extends VoltProcedure {
 
     public final SQLStmt getAcct = new SQLStmt("SELECT * FROM card_account WHERE pan = ?;");

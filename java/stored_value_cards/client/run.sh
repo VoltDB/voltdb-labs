@@ -1,23 +1,7 @@
 #!/usr/bin/env bash
 
-if [ -z $VOLTDB_HOME ]; then
-    export VOLTDB_HOME=`cd ~/voltdb-* && pwd`
-    echo "VOLTDB_HOME was not set... using $VOLTDB_HOME"
-fi
-if [ ! -d $VOLTDB_HOME ]; then
-    echo "VOLTDB_HOME was set to $VOLTDB_HOME, but that directory does not exist..."
-    export VOLTDB_HOME=`cd ~/voltdb-* && pwd`
-    echo "using $VOLTDB_HOME"
-fi
+. ./env.sh
 
-CLASSPATH="`ls -1 $VOLTDB_HOME/voltdb/voltdb-*.jar`:`ls -1 $VOLTDB_HOME/lib/*.jar | tr '\n' ':'`"
-if [ -d lib ]; then
-  CLASSPATH="$CLASSPATH:`ls -1 lib/*.jar | tr '\n' ':'`"
-fi
-VOLTDB="$VOLTDB_HOME/bin/voltdb"
-VOLTCOMPILER="$VOLTDB_HOME/bin/voltcompiler"
-LOG4J="$VOLTDB_HOME/voltdb/log4j.xml"
-LICENSE="$VOLTDB_HOME/voltdb/license.xml"
 SERVERS="localhost:21212" # could be comma-separated list of host:port
 
 # remove build artifacts
@@ -59,12 +43,13 @@ function client() {
     benchmark
 }
 
+
+
 function help() {
-    echo "Usage: ./run.sh {help|srccompile|init-us|init-shanghai|benchmark|clean|download}"
+    echo "Usage: ./run.sh {clean|srccompile|client|help}"
 }
 
 # Run the target passed as the first arg on the command line
 # If no first arg, run server
 if [ $# -gt 1 ]; then help; exit; fi
 if [ $# = 1 ]; then $1; else client; fi
-

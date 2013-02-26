@@ -1,5 +1,11 @@
+package client;
+
 /* This file is part of VoltDB.
- * Copyright (C) 2008-2012 VoltDB Inc.
+ * Copyright (C) 2008-2013 VoltDB Inc.
+ * 
+ * This file contains original code and/or modifications of original code.
+ * Any modifications made by VoltDB Inc. are licensed under the following
+ * terms and conditions:
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -20,30 +26,10 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
-/*
- * This samples uses the native asynchronous request processing protocol
- * to post requests to the VoltDB server, thus leveraging to the maximum
- * VoltDB's ability to run requests in parallel on multiple database
- * partitions, and multiple servers.
- *
- * While asynchronous processing is (marginally) more convoluted to work
- * with and not adapted to all workloads, it is the preferred interaction
- * model to VoltDB as it guarantees blazing performance.
- *
- * Because there is a risk of 'firehosing' a database cluster (if the
- * cluster is too slow (slow or too few CPUs), this sample performs
- * auto-tuning to target a specific latency (5ms by default).
- * This tuning process, as demonstrated here, is important and should be
- * part of your pre-launch evaluation so you can adequately provision your
- * VoltDB cluster with the number of servers required for your needs.
- */
-
-package client;
 
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.voltdb.CLIConfig;
 import org.voltdb.VoltTable;
@@ -59,10 +45,10 @@ import org.voltdb.client.ProcedureCallback;
 
 //import voter.procedures.Vote;
 
-public class GenericBenchmark {
+public abstract class BaseBenchmark {
 
     // handy, rather than typing this out several times
-    static final String HORIZONTAL_RULE =
+    public static final String HORIZONTAL_RULE =
             "----------" + "----------" + "----------" + "----------" +
             "----------" + "----------" + "----------" + "----------" + "\n";
 
@@ -77,54 +63,6 @@ public class GenericBenchmark {
     // Statistics manager objects from the client
     final ClientStatsContext periodicStatsContext;
     final ClientStatsContext fullStatsContext;
-
-    /**
-     * Uses included {@link CLIConfig} class to
-     * declaratively state command line options with defaults
-     * and validation.
-     */
-    static class BenchmarkConfig extends CLIConfig {
-        @Option(desc = "Interval for performance feedback, in seconds.")
-        long displayinterval = 5;
-
-        @Option(desc = "Benchmark duration, in seconds.")
-        int duration = 20;
-
-        @Option(desc = "Warmup duration in seconds.")
-        int warmup = 2;
-
-        @Option(desc = "Comma separated list of the form server[:port] to connect to.")
-        String servers = "localhost";
-
-        //@Option(desc = "Number of contestants in the voting contest (from 1 to 10).")
-        //int contestants = 6;
-
-        //@Option(desc = "Maximum number of votes cast per voter.")
-        //int maxvotes = 2;
-
-        @Option(desc = "Maximum TPS rate for benchmark.")
-        int ratelimit = 100000;
-
-        @Option(desc = "Determine transaction rate dynamically based on latency.")
-        boolean autotune = true;
-
-        @Option(desc = "Server-side latency target for auto-tuning.")
-        int latencytarget = 10;
-
-        @Option(desc = "Filename to write raw summary statistics to.")
-        String statsfile = "";
-
-        @Override
-        public void validate() {
-            if (duration <= 0) exitWithMessageAndUsage("duration must be > 0");
-            if (warmup < 0) exitWithMessageAndUsage("warmup must be >= 0");
-            if (displayinterval <= 0) exitWithMessageAndUsage("displayinterval must be > 0");
-            //if (contestants <= 0) exitWithMessageAndUsage("contestants must be > 0");
-            //if (maxvotes <= 0) exitWithMessageAndUsage("maxvotes must be > 0");
-            if (ratelimit <= 0) exitWithMessageAndUsage("ratelimit must be > 0");
-            if (latencytarget <= 0) exitWithMessageAndUsage("latencytarget must be > 0");
-        }
-    }
 
     /**
      * Provides a callback to be notified on node failure.
@@ -146,10 +84,10 @@ public class GenericBenchmark {
      *
      * @param config Parsed & validated CLI options.
      */
-    public GenericBenchmark(BenchmarkConfig config) {
+    public BaseBenchmark(BenchmarkConfig config) {
         this.config = config;
 
-        ClientConfig clientConfig = new ClientConfig("", "", new StatusListener());
+        ClientConfig clientConfig = new ClientConfig(config.user, config.password, new StatusListener());
         if (config.autotune) {
             clientConfig.enableAutoTune();
             clientConfig.setAutoTuneTargetInternalLatency(config.latencytarget);
@@ -161,8 +99,6 @@ public class GenericBenchmark {
 
         periodicStatsContext = client.createStatsContext();
         fullStatsContext = client.createStatsContext();
-
-        //switchboard = new PhoneCallGenerator(config.contestants);
 
         System.out.print(HORIZONTAL_RULE);
         System.out.println(" Command Line Configuration");
@@ -248,10 +184,12 @@ public class GenericBenchmark {
         System.out.printf("Throughput %d/s, ", stats.getTxnThroughput());
         System.out.printf("Aborts/Failures %d/%d, ",
                 stats.getInvocationAborts(), stats.getInvocationErrors());
+
         // cast to stats.getAverageLatency from long to double
         System.out.printf("Avg/95%% Latency %.2f/%dms\n", 
                           (double)stats.getAverageLatency(),
                           stats.kPercentileLatency(0.95));
+
     }
 
     /**
@@ -271,6 +209,7 @@ public class GenericBenchmark {
         System.out.printf("Average throughput:            %,9d txns/sec\n", stats.getTxnThroughput());
         // cast stats.getAverateLatency from long to double
         System.out.printf("Average latency:               %,9.2f ms\n", (double)stats.getAverageLatency());
+        //System.out.printf("Average latency:               %,9d ms\n", stats.getAverageLatency());
         System.out.printf("95th percentile latency:       %,9d ms\n", stats.kPercentileLatency(.95));
         System.out.printf("99th percentile latency:       %,9d ms\n", stats.kPercentileLatency(.99));
 
@@ -283,39 +222,12 @@ public class GenericBenchmark {
         }
         // cast stats.getAverageInternalLatency from long to double
         System.out.printf("Reported Internal Avg Latency: %,9.2f ms\n", (double)stats.getAverageInternalLatency());
+        //System.out.printf("Reported Internal Avg Latency: %,9d ms\n", stats.getAverageInternalLatency());
 
         // 4. Write stats to file if requested
         client.writeSummaryCSV(stats, config.statsfile);
     }
 
-    /**
-     * Callback to handle the response to a stored procedure call.
-     * Tracks response types.
-     *
-     */
-    /*
-    class VoterCallback implements ProcedureCallback {
-        @Override
-        public void clientCallback(ClientResponse response) throws Exception {
-            if (response.getStatus() == ClientResponse.SUCCESS) {
-                long resultCode = response.getResults()[0].asScalarLong();
-                if (resultCode == Vote.ERR_INVALID_CONTESTANT) {
-                    badContestantVotes.incrementAndGet();
-                }
-                else if (resultCode == Vote.ERR_VOTER_OVER_VOTE_LIMIT) {
-                    badVoteCountVotes.incrementAndGet();
-                }
-                else {
-                    assert(resultCode == Vote.VOTE_SUCCESSFUL);
-                    acceptedVotes.incrementAndGet();
-                }
-            }
-            else {
-                failedVotes.incrementAndGet();
-            }
-        }
-    }
-    */
 
     /**
      * Initializes any data that needs to be loaded into VoltDB before running the benchmark
@@ -323,7 +235,6 @@ public class GenericBenchmark {
      * @throws Exception
      */
     public void initialize() throws Exception {
-        //TODO
     }
 
     /**
@@ -332,7 +243,6 @@ public class GenericBenchmark {
      * @throws Exception
      */
     public void iterate() throws Exception {
-        //TODO
     }
 
     /**
@@ -350,7 +260,7 @@ public class GenericBenchmark {
         connect(config.servers);
 
         // initialize using synchronous call
-        System.out.println("\nInitializing...\n");
+        System.out.println("\nPopulating Static Tables\n");
         //client.callProcedure("Initialize", config.contestants, CONTESTANT_NAMES_CSV);
         initialize();
 
@@ -360,11 +270,10 @@ public class GenericBenchmark {
 
         // Run the benchmark loop for the requested warmup time
         // The throughput may be throttled depending on client configuration
-        System.out.println("Warming up...");
+        System.out.println("Warming up for "+ config.warmup +" seconds...");
         final long warmupEndTime = System.currentTimeMillis() + (1000l * config.warmup);
         while (warmupEndTime > System.currentTimeMillis()) {
             iterate();
-
         }
 
         // reset the stats after warmup
@@ -380,9 +289,7 @@ public class GenericBenchmark {
         System.out.println("\nRunning benchmark...");
         final long benchmarkEndTime = System.currentTimeMillis() + (1000l * config.duration);
         while (benchmarkEndTime > System.currentTimeMillis()) {
-
             iterate();
-
         }
 
         // cancel periodic stats printing
@@ -398,19 +305,4 @@ public class GenericBenchmark {
         client.close();
     }
 
-    /**
-     * Main routine creates a benchmark instance and kicks off the run method.
-     *
-     * @param args Command line arguments.
-     * @throws Exception if anything goes wrong.
-     * @see {@link BenchmarkConfig}
-     */
-    public static void main(String[] args) throws Exception {
-        // create a configuration from the arguments
-        BenchmarkConfig config = new BenchmarkConfig();
-        config.parse(GenericBenchmark.class.getName(), args);
-
-        GenericBenchmark benchmark = new GenericBenchmark(config);
-        benchmark.runBenchmark();
-    }
 }

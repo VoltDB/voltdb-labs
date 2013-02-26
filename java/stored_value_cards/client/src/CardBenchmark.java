@@ -1,30 +1,25 @@
 package client;
 
-import org.voltdb.client.ClientStats;
-import java.util.Date;
-import java.util.Random;
+import java.util.*;
 
-public class CardBenchmark extends GenericBenchmark {
+public class CardBenchmark extends BaseBenchmark {
 
-    final int cardCount = 500000;
-    final int transferPct = 2;
-    Random rand = new Random();
-
-    
+    private Random rand = new Random();
+    private int cardCount = 500000;
+    private int transferPct = 2;
 
     // constructor
     public CardBenchmark(BenchmarkConfig config) {
         super(config);
         
         // set any instance attributes here
-        //market = new MarketSimulator();
+        cardCount = config.cardcount;
+        transferPct = config.transferpct;
     }
 
     public void initialize() throws Exception {
 
         System.out.println("Generating " + cardCount + " cards...");
-
-        // loop to create 5M cards
         for (int i=0; i<cardCount; i++) {
 
             // generate a card
@@ -32,7 +27,7 @@ public class CardBenchmark extends GenericBenchmark {
             Date now = new Date();
 
             // insert the card
-            client.callProcedure(new GenericCallback("CARD_ACCOUNT.insert"),
+            client.callProcedure(new BenchmarkCallback("CARD_ACCOUNT.insert"),
                                  "CARD_ACCOUNT.insert",
                                  pan,
                                  1, // ACTIVE
@@ -56,14 +51,14 @@ public class CardBenchmark extends GenericBenchmark {
         int id = rand.nextInt(cardCount-1);
         String pan = Integer.toString(id);
 
-        client.callProcedure(new GenericCallback("Authorize"),
+        client.callProcedure(new BenchmarkCallback("Authorize"),
                              "Authorize",
                              pan,
                              25,
                              "USD"
                              );
 
-        client.callProcedure(new GenericCallback("Redeem"),
+        client.callProcedure(new BenchmarkCallback("Redeem"),
                              "Redeem",
                              pan,
                              25,
@@ -78,7 +73,7 @@ public class CardBenchmark extends GenericBenchmark {
             String pan1 = Integer.toString(id1);
             String pan2 = Integer.toString(id2);
 
-            client.callProcedure(new GenericCallback("Transfer",10000),
+            client.callProcedure(new BenchmarkCallback("Transfer",10000),
                                  "Transfer",
                                  pan1,
                                  pan2,
@@ -94,36 +89,18 @@ public class CardBenchmark extends GenericBenchmark {
         System.out.print("\n" + HORIZONTAL_RULE);
         System.out.println(" Transaction Results");
         System.out.println(HORIZONTAL_RULE);
-        GenericCallbackCounter.printProcedureResults("CARD_ACCOUNT.insert");
-        GenericCallbackCounter.printProcedureResults("Authorize");
-        GenericCallbackCounter.printProcedureResults("Redeem");
-        GenericCallbackCounter.printProcedureResults("Transfer");
+        BenchmarkCallback.printProcedureResults("CARD_ACCOUNT.insert");
+        BenchmarkCallback.printProcedureResults("Authorize");
+        BenchmarkCallback.printProcedureResults("Redeem");
+        BenchmarkCallback.printProcedureResults("Transfer");
 
-        System.out.print("\n" + HORIZONTAL_RULE);
-        System.out.println(" Client Workload Statistics");
-        System.out.println(HORIZONTAL_RULE);
-        ClientStats stats = fullStatsContext.fetch().getStats();
-        System.out.printf("Average throughput:            %,9d txns/sec\n", stats.getTxnThroughput());
-        System.out.printf("Average latency:               %,9d ms\n", stats.getAverageLatency());
-        System.out.printf("95th percentile latency:       %,9d ms\n", stats.kPercentileLatency(.95));
-        System.out.printf("99th percentile latency:       %,9d ms\n", stats.kPercentileLatency(.99));
-
-        System.out.print("\n" + HORIZONTAL_RULE);
-        System.out.println(" System Server Statistics");
-        System.out.println(HORIZONTAL_RULE);
-        if (config.autotune) {
-            System.out.printf("Targeted Internal Avg Latency: %,9d ms\n", config.latencytarget);
-        }
-        System.out.printf("Reported Internal Avg Latency: %,9d ms\n", stats.getAverageInternalLatency());
-
-        client.writeSummaryCSV(stats, config.statsfile);
+        super.printResults();
     }
     
     public static void main(String[] args) throws Exception {
-        BenchmarkConfig config = new BenchmarkConfig();
-        config.parse(GenericBenchmark.class.getName(), args);
+        BenchmarkConfig config = BenchmarkConfig.getConfig("CardBenchmark",args);
         
-        CardBenchmark benchmark = new CardBenchmark(config);
+        BaseBenchmark benchmark = new CardBenchmark(config);
         benchmark.runBenchmark();
 
     }

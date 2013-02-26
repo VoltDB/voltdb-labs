@@ -1,18 +1,27 @@
-# README for client Benchmark package #
+README for client package
+=========================
 
-This java client source is very similar in operation to the "voter" example, but has been refactored to separate business logic code from boilerplate benchmark code.
+This java client source is based on the VoltDB example application "voter", specifically the AsyncBenchmark, but refactored to separate boilerplate from application-specific code.
 
-The **GenericBenchmark** class is the primary driving class, which implements most of the boilerplate benchmark code found in voter.
+BaseBenchmark.java: 
+  - boilerplate
+  - should not need to be modified
+  - establishes connection, collects statistics, prints periodic stats, drives the main loops of the benchmark
+  
+BenchmarkCallback.java
+  - a general-purpose callback class for tracking the results of asynchronous stored-procedure calls.  
+  - Keeps a thread-safe count of invocations, commits, and rollbacks
+  - provides a summary report
+  
+BenchmarkConfig.java
+  - defines the commmand-line arguments for the benchmark
+  
+CardBenchmark.java
+  - extends BaseBenchmark.java
+  - uses command-line arguments from BenchmarkConfig.java
+  - Provides the implementation for application-specific actions:
+     initialize() - executed once, pre-populates card accounts table
+     iterate() - executed at a controlled rate throughout the duration of the benchmark, generates randomized preauthorizations, purchases and transfers.
+     printResults() - customized to list the results of the particular stored procedures involved.
 
-The **CardBenchmark** class extends GenericBenchmark, and overrides mainly three methods:
-
-- **initialize** - inserts the cards
-- **iterate** - each call to this method is one iteration of the main benchmark loop which is in the GenericBenchmark.runBenchmark method.  Here, we simulate preauthorizations, purchases and transfers.
-- **printResults** - this is customized to print the number of calls, commits and rollbacks to each of the stored procedures used in the simulation, in addition to standard benchmark stats.
-
-The remaining classes are "helpers":
-
-- **GenericCallback** - a callback class that can be used to track the results (calls, commits, rollbacks) of stored procedure calls.  Rather than writing a new callback class for each stored procedure that gets called (which is still an option), this class can be used for any procedure call.
-- **GenericCallbackCounter** - a class that maintains atomic counts of the results (calls, commits, rollbacks) as received by objects of the GenericCallback class.  Rather than putting atomic counters for each type of procedure call in the benchmark, and code to print the results for each counter, this class is reusable.
-
-If you were to use this package of classes as a starting point to build a new benchmark, the intention is that you would only need to modify CardBenchmark.
+If you were to use this applicatoin as a template, you should only need to copy and modify CardBenchmark and possibly add options to BenchmarkConfig.
