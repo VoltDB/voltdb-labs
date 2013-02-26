@@ -24,10 +24,6 @@ import org.voltdb.types.TimestampType;
  * metadata, and correct use the Volt query interface.
  */
 
-@ProcInfo(
-    partitionInfo = "trades.symbol: 0",
-    singlePartition = true
-)
 public class InsertTrade extends VoltProcedure {
 
     public final SQLStmt lastTick = new SQLStmt("SELECT price FROM trades WHERE" +

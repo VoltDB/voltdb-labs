@@ -1,7 +1,5 @@
 package client;
 
-import au.com.bytecode.opencsv.CSVReader;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;

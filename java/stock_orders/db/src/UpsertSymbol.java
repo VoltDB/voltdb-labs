@@ -22,10 +22,6 @@ import org.voltdb.client.ClientResponse;
  * metadata, and correct use the Volt query interface.
  */
 
-@ProcInfo(
-    partitionInfo = "symbols.symbol: 0",
-    singlePartition = true
-)
 public class UpsertSymbol extends VoltProcedure {
 
     public final SQLStmt checkStmt = new SQLStmt("SELECT COUNT(*) FROM symbols WHERE symbol = ?");

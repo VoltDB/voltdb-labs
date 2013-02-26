@@ -1,6 +1,6 @@
 package client;
 
-import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv_voltpatches.CSVReader; // this is packaged in the voltdb-*.jar file
 
 import java.io.BufferedReader;
 import java.io.FileReader;
