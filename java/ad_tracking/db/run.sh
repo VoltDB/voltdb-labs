@@ -2,7 +2,7 @@
 
 . ./env.sh
 
-APPNAME="load_stocks"
+APPNAME="ad_tracking"
 
 # remove build artifacts
 function clean() {
@@ -37,7 +37,7 @@ function server() {
 }
 
 function help() {
-    echo "Usage: ./run.sh {clean|catalog|server|help}"
+    echo "Usage: ./run.sh {srccompile|catalog|server|clean|help}"
 }
 
 # Run the target passed as the first arg on the command line

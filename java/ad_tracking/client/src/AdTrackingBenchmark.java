@@ -5,20 +5,21 @@ import java.util.*;
 public class AdTrackingBenchmark extends BaseBenchmark {
 
     private Random rand = new Random();
-    private int cardCount = 500000;
-    private int transferPct = 2;
+    //private int cardCount = 500000;
+    //private int transferPct = 2;
 
     // constructor
     public AdTrackingBenchmark(BenchmarkConfig config) {
         super(config);
         
         // set any instance attributes here
-        cardCount = config.cardcount;
-        transferPct = config.transferpct;
+        //cardCount = config.cardcount;
+        //transferPct = config.transferpct;
     }
 
     public void initialize() throws Exception {
 
+        /*
         System.out.println("Generating " + cardCount + " cards...");
         for (int i=0; i<cardCount; i++) {
 
@@ -42,12 +43,12 @@ public class AdTrackingBenchmark extends BaseBenchmark {
             
         }
         System.out.println("  " + cardCount);
-
+        */
 
     }
 
     public void iterate() throws Exception {
-        
+        /*        
         int id = rand.nextInt(cardCount-1);
         String pan = Integer.toString(id);
 
@@ -81,7 +82,7 @@ public class AdTrackingBenchmark extends BaseBenchmark {
                                  "USD"
                                  );
         }
-        
+        */
     }
 
     public void printResults() throws Exception {
@@ -89,10 +90,10 @@ public class AdTrackingBenchmark extends BaseBenchmark {
         System.out.print("\n" + HORIZONTAL_RULE);
         System.out.println(" Transaction Results");
         System.out.println(HORIZONTAL_RULE);
-        BenchmarkCallback.printProcedureResults("CARD_ACCOUNT.insert");
-        BenchmarkCallback.printProcedureResults("Authorize");
-        BenchmarkCallback.printProcedureResults("Redeem");
-        BenchmarkCallback.printProcedureResults("Transfer");
+        //BenchmarkCallback.printProcedureResults("CARD_ACCOUNT.insert");
+        //BenchmarkCallback.printProcedureResults("Authorize");
+        //BenchmarkCallback.printProcedureResults("Redeem");
+        //BenchmarkCallback.printProcedureResults("Transfer");
 
         super.printResults();
     }
