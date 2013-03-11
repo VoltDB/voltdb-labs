@@ -5,7 +5,9 @@ import java.util.*;
 public class AdTrackingBenchmark extends BaseBenchmark {
 
     private Random rand = new Random();
-    //private int cardCount = 500000;
+    private int advertisers = 1000;
+    private int advertiserCampaigns = 50;
+    private int advertiserCampaigns = 50;
     //private int transferPct = 2;
 
     // constructor

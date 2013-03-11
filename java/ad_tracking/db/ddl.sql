@@ -45,6 +45,7 @@ CREATE TABLE creatives (
 CREATE TABLE impression_data (
   utc_time               TIMESTAMP     NOT NULL,
   ip_address             INTEGER       NOT NULL,
+  cookie_uid             BIGINT,
   creative_id            BIGINT        NOT NULL,
   inventory_id           BIGINT        NOT NULL,
   type_id                INTEGER       NOT NULL,
@@ -87,7 +88,7 @@ GROUP BY advertiser_id, campaign_id, utc_min;
 -------------- PROCEDURES -------------------------------------------
 
 CREATE PROCEDURE FROM CLASS procedures.TrackImpression;
-PARTITION PROCEDURE TrackImpression ON TABLE impression_data COLUMN creative_id PARAMETER 2;
+PARTITION PROCEDURE TrackImpression ON TABLE impression_data COLUMN creative_id PARAMETER 3;
 
 CREATE PROCEDURE ad_campaign_hourly_rates AS
 SELECT campaign_id, utc_hr, clicks/impressions as ctr, conversions/clicks as cr

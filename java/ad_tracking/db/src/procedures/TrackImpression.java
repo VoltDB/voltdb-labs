@@ -21,11 +21,12 @@ public class TrackImpression extends VoltProcedure {
 
     public final SQLStmt insertImpression = new SQLStmt(
         "INSERT INTO impression_data VALUES (" +
-        "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?" +
+        "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?" +
         ");");
 
     public long run( Date    utc_time,
                      int     ip_address,
+                     long    cookie_uid,
                      long    creative_id,
                      long    inventory_id,
                      int     type_id
@@ -69,6 +70,7 @@ public class TrackImpression extends VoltProcedure {
 	voltQueueSQL( insertImpression,
                       utc_time,
                       ip_address,
+                      cookie_uid,
                       creative_id,
                       inventory_id,
                       type_id,
