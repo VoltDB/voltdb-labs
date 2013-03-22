@@ -14,39 +14,39 @@ import org.voltdb.types.TimestampType;
 public class TrackImpression extends VoltProcedure {
 
     public final SQLStmt selectCreative = new SQLStmt(
-        "SELECT format_id, campaign_id, advertiser_id FROM creatives WHERE creative_id = ?;");
+        "SELECT campaign_id, advertiser_id FROM creatives WHERE creative_id = ?;");
 
     public final SQLStmt selectInventory = new SQLStmt(
         "SELECT site_id, page_id FROM inventory WHERE inventory_id = ?;");
 
     public final SQLStmt insertImpression = new SQLStmt(
         "INSERT INTO impression_data VALUES (" +
-        "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?" +
+        "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?" +
         ");");
 
-    public long run( Date    utc_time,
-                     int     ip_address,
+    public long run( long    utc_time,
+                     long    ip_address,
                      long    cookie_uid,
-                     long    creative_id,
-                     long    inventory_id,
+                     int     creative_id,
+                     int     inventory_id,
                      int     type_id
 		     ) throws VoltAbortException {
 
         Calendar cal = Calendar.getInstance();
-        cal.setTime(utc_time);
+        cal.setTimeInMillis(utc_time);
 
         // truncate to minute
         cal.set(Calendar.MILLISECOND, 0);
         cal.set(Calendar.SECOND, 0);
-        Date utc_min = cal.getTime();
+        long utc_min = cal.getTimeInMillis();
         
 	// truncate further to hour
         cal.set(Calendar.MINUTE, 0);
-        Date utc_hr = cal.getTime();
+        long utc_hr = cal.getTimeInMillis();
 
 	// truncate further to day
         cal.set(Calendar.HOUR_OF_DAY, 0);
-        Date utc_day = cal.getTime();
+        long utc_day = cal.getTimeInMillis();
 
         // derive flags from type_id
         int is_impression = (type_id == 0) ? 1 : 0;
@@ -59,9 +59,8 @@ public class TrackImpression extends VoltProcedure {
         VoltTable lookups[] = voltExecuteSQL();
 
         VoltTableRow creative = lookups[0].fetchRow(0);
-        int format_id = (int)creative.getLong(0);
-        int campaign_id = (int)creative.getLong(1);
-        int advertiser_id = (int)creative.getLong(2);
+        int campaign_id = (int)creative.getLong(0);
+        int advertiser_id = (int)creative.getLong(1);
 
         VoltTableRow inventory = lookups[1].fetchRow(0);
         int site_id = (int)creative.getLong(0);
@@ -77,7 +76,6 @@ public class TrackImpression extends VoltProcedure {
                       utc_day,
                       utc_hr,
                       utc_min,
-                      format_id,
                       campaign_id,
                       advertiser_id,
                       site_id,

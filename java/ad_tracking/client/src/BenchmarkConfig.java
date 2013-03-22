@@ -62,11 +62,20 @@ public class BenchmarkConfig extends CLIConfig {
     String statsfile = "";
 
     // CUSTOM OPTIONS
-    @Option(desc = "Number of Advertisers")
-    int cardcount = 100;
+    @Option(desc = "Number of Sites")
+    int sites = 1000;
 
-    @Option(desc = "Campaigns per Advertiser")
-     int transferpct = 1;
+    @Option(desc = "Pages per Site")
+     int pagespersite = 10;
+
+    @Option(desc = "Number of Advertisers")
+     int advertisers = 1000;
+
+    @Option(desc = "Campaigns per Site")
+     int campaignsperadvertiser = 10;
+
+    @Option(desc = "Creatives per Campaign")
+     int creativespercampaign = 10;
 
     public BenchmarkConfig() {
     }

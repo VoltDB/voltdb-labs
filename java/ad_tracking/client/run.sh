@@ -9,14 +9,6 @@ function clean() {
     rm -rf obj log stocks
 }
 
-# download fresh market symbols
-function download-stocks() {
-    mkdir -p stocks
-    curl "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=nasdaq&render=download" -o stocks/NASDAQ.csv
-    curl "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=nyse&render=download" -o stocks/NYSE.csv
-    curl "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=amex&render=download" -o stocks/AMEX.csv
-}
-
 # compile the source code for procedures and the client
 function srccompile() {
     mkdir -p obj
@@ -29,11 +21,21 @@ function srccompile() {
 # run the client that drives the example
 function client() {
     srccompile
-    # download symbols if needed
-    if [ ! -f stocks/NASDAQ.csv ]; then download-stocks; fi
     # run client
     java -classpath obj:$CLASSPATH:obj -Dlog4j.configuration=file://$LOG4J \
-	client.StocksLoader load.props stocks/NASDAQ.csv stocks/NYSE.csv stocks/AMEX.csv
+	client.AdTrackingBenchmark \
+        --displayinterval=5 \
+        --warmup=1 \
+        --duration=10 \
+        --servers=$SERVERS \
+        --ratelimit=20000 \
+        --autotune=true \
+        --latencytarget=1 \
+        --sites=1000 \
+        --pagespersite=10 \
+        --advertisers=1000 \
+        --campaignsperadvertiser=10 \
+        --creativespercampaign=10
 
 }
 

@@ -25,16 +25,14 @@
 -------------- REPLICATED TABLES ------------------------------------------------
 
 CREATE TABLE inventory (
-  inventory_id           BIGINT        NOT NULL,
+  inventory_id           INTEGER        NOT NULL,
   site_id                INTEGER       NOT NULL,
   page_id                INTEGER       NOT NULL,
-  format_id              INTEGER       NOT NULL,
   CONSTRAINT pk_inventory PRIMARY KEY (inventory_id)
 );
 
 CREATE TABLE creatives (
-  creative_id            BIGINT        NOT NULL,
-  format_id              INTEGER       NOT NULL,
+  creative_id            INTEGER       NOT NULL,
   campaign_id            INTEGER       NOT NULL,
   advertiser_id          INTEGER       NOT NULL,
   CONSTRAINT pk_creatives PRIMARY KEY (creative_id)
@@ -44,17 +42,16 @@ CREATE TABLE creatives (
 
 CREATE TABLE impression_data (
   utc_time               TIMESTAMP     NOT NULL,
-  ip_address             INTEGER       NOT NULL,
+  ip_address             BIGINT        NOT NULL,
   cookie_uid             BIGINT,
-  creative_id            BIGINT        NOT NULL,
-  inventory_id           BIGINT        NOT NULL,
+  creative_id            INTEGER       NOT NULL,
+  inventory_id           INTEGER       NOT NULL,
   type_id                INTEGER       NOT NULL,
   -- derived from utc_time:
   utc_day                TIMESTAMP     NOT NULL,
   utc_hr                 TIMESTAMP     NOT NULL,
   utc_min                TIMESTAMP     NOT NULL,
   -- derived from creative_id:
-  format_id              INTEGER       NOT NULL,
   campaign_id            INTEGER       NOT NULL,
   advertiser_id          INTEGER       NOT NULL,
   -- derived from inventory_id:
