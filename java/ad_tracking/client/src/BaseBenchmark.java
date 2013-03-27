@@ -260,21 +260,21 @@ public abstract class BaseBenchmark {
         connect(config.servers);
 
         // initialize using synchronous call
-        System.out.println("\nPopulating Static Tables\n");
+        System.out.println("\nPre-loading Tables...\n");
         //client.callProcedure("Initialize", config.contestants, CONTESTANT_NAMES_CSV);
         initialize();
 
-        System.out.print(HORIZONTAL_RULE);
-        System.out.println("Starting Benchmark");
-        System.out.println(HORIZONTAL_RULE);
-
         // Run the benchmark loop for the requested warmup time
         // The throughput may be throttled depending on client configuration
-        System.out.println("Warming up for "+ config.warmup +" seconds...");
+        System.out.println("Warming up for the specified "+ config.warmup +" seconds...");
         final long warmupEndTime = System.currentTimeMillis() + (1000l * config.warmup);
         while (warmupEndTime > System.currentTimeMillis()) {
             iterate();
         }
+
+        System.out.print(HORIZONTAL_RULE);
+        System.out.println("Starting Benchmark");
+        System.out.println(HORIZONTAL_RULE);
 
         // reset the stats after warmup
         fullStatsContext.fetchAndResetBaseline();

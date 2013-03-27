@@ -2,8 +2,6 @@
 
 . ./env.sh
 
-APPNAME="load_stocks"
-
 # remove build artifacts
 function clean() {
     rm -rf obj log stocks
@@ -25,8 +23,8 @@ function client() {
     java -classpath obj:$CLASSPATH:obj -Dlog4j.configuration=file://$LOG4J \
 	client.AdTrackingBenchmark \
         --displayinterval=5 \
-        --warmup=1 \
-        --duration=10 \
+        --warmup=5 \
+        --duration=120 \
         --servers=$SERVERS \
         --ratelimit=20000 \
         --autotune=true \
@@ -36,11 +34,10 @@ function client() {
         --advertisers=1000 \
         --campaignsperadvertiser=10 \
         --creativespercampaign=10
-
 }
 
 function help() {
-    echo "Usage: ./run.sh {clean|client|download-stocks|help|srccompile}"
+    echo "Usage: ./run.sh {clean|client|help|srccompile}"
 }
 
 # Run the target passed as the first arg on the command line

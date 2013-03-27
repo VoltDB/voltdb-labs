@@ -34,7 +34,8 @@ public class AdTrackingBenchmark extends BaseBenchmark {
     public void initialize() throws Exception {
 
         // generate inventory
-        System.out.println("Generating Inventory...");
+        System.out.println("Loading Inventory table based on " + sites + 
+                           " sites and " + pagesPerSite + " pages per site...");
         for (int i=1; i<=sites; i++) {
             for (int j=1; j<=pagesPerSite; j++) {
                 inventoryMaxID++;
@@ -49,7 +50,9 @@ public class AdTrackingBenchmark extends BaseBenchmark {
         }
 
         // generate creatives
-        System.out.println("Generating Creatives...");
+        System.out.println("Loading Creatives table based on " + advertisers + 
+                           " advertisers, each with " + campaignsPerAdvertiser + 
+                           " campaigns, each with " + creativesPerCampaign + " creatives...");
         for (int advertiser=1; advertiser<=advertisers; advertiser++) {
             for (int campaign=1; campaign<=campaignsPerAdvertiser; campaign++) {
                 for (int i=1; i<=creativesPerCampaign; i++) {
