@@ -20,25 +20,35 @@ The sample also has a web UI:
 
 ## Building
 * Execute 
-  mvn clean install
+
+    mvn clean install
 
 ## Running
 * Open one terminalwindow to run VoltDB. 
 * Go into the ./procs directory.
 * Export your VOLT_HOME directory.
-  export VOLT_HOME=/users/me/voltdb-<version>
+  
+    export VOLT_HOME=/users/me/voltdb-<version>
+
 * Start the server
-  ./run.sh 
+
+    ./run.sh 
+
 Note: You may need to clean the stored procedure catalog. If so, then run:
-  ./run.sh clean
+
+    ./run.sh clean
 
 * Open a second terminal window to run the data generator application.
 * Go into the ./client directory.
 * Run the client
-  ./run.sh
+  
+    ./run.sh
+
 Note: The client is set to connect to the localhost. It can be configured to run against another server.
 
 * Open the ./web/index.htm file in a browser.
 Note: This will connect to VoltDB running on the localhost. If you move voltdb to a server, then create an ssh tunnel that will redirect your traffic by opening a new terminal and running:
-  ssh -f user@personal-server.com -L 8080:personal-server.com:8080 -N
+
+    ssh -f user@personal-server.com -L 8080:personal-server.com:8080 -N
+
 This will redirect all queries form your localhost to the correct the server.

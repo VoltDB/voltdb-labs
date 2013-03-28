@@ -23,26 +23,32 @@ Building
 ========
 You must first have the VoltDB Client and Procedure libraries installed into the
 maven local repository. Go into the <voltdb_home>/voltdb directory and run:
-mvn install:install-file -Dfile=./voltdb-2.8.4.1.jar -DgroupId=org.voltdb
--DartifactId=VoltDB -Dversion=2.8.4.1 -Dpackaging=jar
-mvn install:install-file -Dfile=./voltdbclient-2.8.4.1.jar -DgroupId=org.voltdb
--DartifactId=VoltDBClient -Dversion=2.8.4.1 -Dpackaging=jar
+
+    mvn install:install-file -Dfile=./voltdb-2.8.4.1.jar -DgroupId=org.voltdb \
+    -DartifactId=VoltDB -Dversion=2.8.4.1 -Dpackaging=jar
+
+    mvn install:install-file -Dfile=./voltdbclient-2.8.4.1.jar -DgroupId=org.voltdb \
+    -DartifactId=VoltDBClient -Dversion=2.8.4.1 -Dpackaging=jar
 
 Building the application from the sample's root directory by running:
-mvn clean install package
+
+    mvn clean install package
 
 Running
 =======
 Open two console windows. In both, execute:
-export VOLT_HOME=<volt_home_directory>
+
+    export VOLT_HOME=<volt_home_directory>
 
 To run the server:
-cd ./procedures
-./run.sh
+
+    cd ./procedures
+    ./run.sh
 
 To run the client:
-cd ./client
-./run.sh
+
+    cd ./client
+    ./run.sh
 
 The application will run for two minutes, populating the database with bandwidth
 data.

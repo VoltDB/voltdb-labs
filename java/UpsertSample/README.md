@@ -31,14 +31,16 @@ You must perform the "clean" step whenever you change the stored procedure or
 the client.
 
 Do the following in the first terminal:
-1. ./run.sh clean
-2. ./run.sh server
+
+    ./run.sh clean
+    ./run.sh server
 
 Step one will delete all the compiled code and jar file.
 Step two will compile everything and start the volt server.
 
 In the second terminal, run the following:
-1. ./run.sh client
+
+    ./run.sh client
 
 This will begin the client application. The client application is configured to
 connect to one VoltDB instance running on the local host. You can alter the

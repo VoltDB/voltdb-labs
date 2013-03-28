@@ -10,17 +10,23 @@ Reads a real Flickr JSON feed and stores the results in Volt. Volt extracts all 
 
 ## Building
 * Execute 
-  mvn clean install
+
+    mvn clean install
 
 ## Running
 * Open one terminalwindow to run VoltDB. 
 * Go into the ./procs directory.
 * Export your VOLT_HOME directory.
-  export VOLT_HOME=/users/me/voltdb-<version>
+
+    export VOLT_HOME=/users/me/voltdb-<version>
+
 * Start the server
-  ./run.sh 
+
+    ./run.sh 
 
 * Open a second terminal window to run the data generator application.
 * Run the client
-  mvn exec:java
+
+    mvn exec:java
+
 Note: The client is set to connect to the localhost. It can be configured to run against another server.
