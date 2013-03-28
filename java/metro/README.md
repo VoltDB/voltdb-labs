@@ -1,9 +1,9 @@
-# README for VoltDB stored value card application #
+# README for VoltDB Metro application #
 
 This application performs high velocity transaction processing for metro cards.  These transactions include:
 
-- Card generation
-- Card Swipes
+- Card generation (during the initialization)
+- Card Swipes (during the benchmark)
 
 The code is divided into two projects:
 
