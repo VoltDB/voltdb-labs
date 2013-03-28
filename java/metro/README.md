@@ -1,12 +1,14 @@
-# README for VoltDB stored value card application #
+# README for VoltDB Metro application #
 
-This application performs high velocity transaction processing for stored value cards.  These transactions include:
+This application performs high velocity transaction processing for metro cards.  These transactions include:
 
-- Pre-Authorizations, where the available balance is checked if sufficient and then modified, but the purchase is not completed.
-- Purchase, where the previously-authorized purchase is completed
-- Transfer, where a balance transfer is made between two cards.
+- Card generation (during the initialization)
+- Card Swipes (during the benchmark)
 
-The code is divided into two projects.  Under the "db" directory is the database project, which contains the schema, stored procedures and other configurations that are compiled into a catalog and run in a VoltDB database.  Under the "client" directory is a java client that loads a set of cards and then generates random card transactions a high velocity to simulate card activity.
+The code is divided into two projects:
+
+- "db": the database project, which contains the schema, stored procedures and other configurations that are compiled into a catalog and run in a VoltDB database.  
+- "client": a java client that loads a set of cards and then generates random card transactions a high velocity to simulate card activity.
 
 See below for instructions on running these applications.  For any questions, 
 please contact fieldengineering@voltdb.com.
@@ -42,7 +44,7 @@ in Appendix D.
 Client application
 ------------------
 To build and run the database application:
-  
+
     cd client
     ./run.sh
 

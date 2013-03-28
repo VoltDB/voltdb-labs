@@ -30,15 +30,18 @@ provided with VoltDB Enterprise Edition.
 
 
 To build and run the database application:
-  cd db
-  ./run.sh
+
+    cd db
+    ./run.sh
 
 Optionally, you can just compile or build the catalog with the following commands
-  ./run.sh srccompile
-  ./run.sh catalog
+
+    ./run.sh srccompile
+    ./run.sh catalog
 
 You can remove the compiled code with:
-  ./run.sh clean
+
+    ./run.sh clean
 
 To configure for more than 1 node, edit the deployment.xml file.  Basic instructions
 are in Using VoltDB, Section 6.1, and all the options for the deployment file are described
@@ -47,15 +50,18 @@ in Appendix D.
 Client application: /client
 ------------------
 To build and run the client:
-  cd db
-  ./run.sh
+
+    cd client
+    ./run.sh
 
 Optionally, you can just compile with the following commands
-  ./run.sh srccompile
+
+    ./run.sh srccompile
 
 You may want to edit the parameters for the benchmark.  To do this, edit the run.sh file, under
 the section "function benchmark()".
 
 You can remove the compiled code with:
-./run.sh clean
+
+    ./run.sh clean
 
