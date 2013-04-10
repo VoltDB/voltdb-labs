@@ -152,7 +152,7 @@ class VoltClient {
         connections.await()
     }
 
-    public boolean callProcedure(Closure callback, String procName, Object ... params) {
+    boolean callProcedure(Closure callback, String procName, Object ... params) {
         try {
             return getClient().callProcedure( callback as ProcedureCallback, procName, params)
         } catch (Exception ex) {

@@ -30,8 +30,9 @@ def pcr = mapper.reader(VoltInvocation.class)
 
 def eb = vertx.eventBus
 def log = container.logger
+def hosts = container.config.get('hosts',['localhost'])
 
-def volt = new VoltClient(["localhost"],log)
+def volt = new VoltClient(hosts,log)
 
 eb.registerHandler("volt") { message ->
     def invocation = pcr.readValue(message.body)
@@ -44,6 +45,5 @@ def vertxStop() {
     log.info "stopping volt bus module"
     volt.shutdown()
 }
-
 
 
