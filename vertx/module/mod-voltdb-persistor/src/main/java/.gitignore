@@ -1,0 +1,8 @@
+.DS_Store
+/.DS_Store
+log/
+*.log
+debugoutput/
+voltdbroot/
+*.class
+java/*/db/*.jar
