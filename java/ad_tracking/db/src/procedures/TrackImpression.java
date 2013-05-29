@@ -1,7 +1,7 @@
 package procedures;
 
 import java.util.Calendar;
-import java.util.Date;
+//import java.util.Date;
 import org.voltdb.ProcInfo;
 import org.voltdb.SQLStmt;
 import org.voltdb.VoltProcedure;
