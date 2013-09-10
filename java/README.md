@@ -23,6 +23,9 @@ An app that simulates high velocity transaction processing of pre-authorization,
 ### Metro ###
 Bus and subway card users are getting on buses and onto trains.  Every card swipe is validated against the card account and tracked.
 
+### Ad Tracking ###
+Calculate real-time CTR and conversion rates aggregated various ways while ingesting time-series events for ad impressions, clickthroughs and conversions.
+
 ### Demographics Analytics ###
 An app that demonstrates real-time analytics against a live data stream of user data. The data is broken down into demographic groups which can be viewed using a browser.
 
