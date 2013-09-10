@@ -1,7 +1,5 @@
 package procedures;
 
-import java.util.Calendar;
-//import java.util.Date;
 import org.voltdb.ProcInfo;
 import org.voltdb.SQLStmt;
 import org.voltdb.VoltProcedure;
@@ -21,7 +19,9 @@ public class TrackImpression extends VoltProcedure {
 
     public final SQLStmt insertImpression = new SQLStmt(
         "INSERT INTO impression_data VALUES (" +
-        "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?" +
+        "?,?,?,?,?,?," +
+        "TRUNCATE(DAY,?),TRUNCATE(HOUR,?),TRUNCATE(MINUTE,?)," +
+        "?,?,?,?,?,?,?" +
         ");");
 
     public long run( long    utc_time,
@@ -31,22 +31,6 @@ public class TrackImpression extends VoltProcedure {
                      int     inventory_id,
                      int     type_id
 		     ) throws VoltAbortException {
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(utc_time);
-
-        // truncate to minute
-        cal.set(Calendar.MILLISECOND, 0);
-        cal.set(Calendar.SECOND, 0);
-        long utc_min = cal.getTimeInMillis();
-        
-	// truncate further to hour
-        cal.set(Calendar.MINUTE, 0);
-        long utc_hr = cal.getTimeInMillis();
-
-	// truncate further to day
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        long utc_day = cal.getTimeInMillis();
 
         // derive flags from type_id
         int is_impression = (type_id == 0) ? 1 : 0;
@@ -63,8 +47,8 @@ public class TrackImpression extends VoltProcedure {
         int advertiser_id = (int)creative.getLong(1);
 
         VoltTableRow inventory = lookups[1].fetchRow(0);
-        int site_id = (int)creative.getLong(0);
-        int page_id = (int)creative.getLong(1);
+        int site_id = (int)inventory.getLong(0);
+        int page_id = (int)inventory.getLong(1);
 
 	voltQueueSQL( insertImpression,
                       utc_time,
@@ -73,9 +57,9 @@ public class TrackImpression extends VoltProcedure {
                       creative_id,
                       inventory_id,
                       type_id,
-                      utc_day,
-                      utc_hr,
-                      utc_min,
+                      utc_time,
+                      utc_time,
+                      utc_time,
                       campaign_id,
                       advertiser_id,
                       site_id,

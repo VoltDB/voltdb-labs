@@ -6,7 +6,7 @@ APPNAME="ad_tracking"
 
 # remove build artifacts
 function clean() {
-    rm -rf obj log debugoutput $APPNAME.jar voltdbroot
+    rm -rf obj log statement-plans $APPNAME.jar voltdbroot catalog-report.html
 }
 
 # compile the source code for procedures and the client

@@ -76,7 +76,6 @@ SELECT advertiser_id, campaign_id, creative_id, utc_hr, COUNT(*) AS records, SUM
 FROM impression_data
 GROUP BY advertiser_id, campaign_id, creative_id, utc_hr;
 
-
 CREATE VIEW ad_campaign_rates_minutely AS
 SELECT advertiser_id, campaign_id, utc_min, COUNT(*) AS records, SUM(is_impression) AS impressions, SUM(is_clickthrough) AS clicks, SUM(is_conversion) as conversions
 FROM impression_data
