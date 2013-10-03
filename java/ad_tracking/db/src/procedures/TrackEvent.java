@@ -1,15 +1,16 @@
 package procedures;
 
-import org.voltdb.ProcInfo;
+import java.math.BigDecimal;
+//import org.voltdb.ProcInfo;
 import org.voltdb.SQLStmt;
 import org.voltdb.VoltProcedure;
 import org.voltdb.VoltTable;
 import org.voltdb.VoltTableRow;
-import org.voltdb.VoltType;
+//import org.voltdb.VoltType;
 import org.voltdb.client.ClientResponse;
 import org.voltdb.types.TimestampType;
 
-public class TrackImpression extends VoltProcedure {
+public class TrackEvent extends VoltProcedure {
 
     public final SQLStmt selectCreative = new SQLStmt(
         "SELECT campaign_id, advertiser_id FROM creatives WHERE creative_id = ?;");
@@ -17,22 +18,25 @@ public class TrackImpression extends VoltProcedure {
     public final SQLStmt selectInventory = new SQLStmt(
         "SELECT site_id, page_id FROM inventory WHERE inventory_id = ?;");
 
-    public final SQLStmt insertImpression = new SQLStmt(
-        "INSERT INTO impression_data VALUES (" +
-        "?,?,?,?,?,?," +
-        "TRUNCATE(DAY,?),TRUNCATE(HOUR,?),TRUNCATE(MINUTE,?)," +
+    public final SQLStmt insertEvent = new SQLStmt(
+        "INSERT INTO event_data VALUES (" +
+        "?,?,?,?,?,?,?," +
         "?,?,?,?,?,?,?" +
         ");");
 
-    public long run( long    utc_time,
-                     long    ip_address,
-                     long    cookie_uid,
-                     int     creative_id,
-                     int     inventory_id,
-                     int     type_id
+    public long run( TimestampType utc_time,
+                     long ip_address,
+                     long cookie_uid,
+                     int creative_id,
+                     int inventory_id,
+                     int type_id,
+                     BigDecimal cost
 		     ) throws VoltAbortException {
 
-        // derive flags from type_id
+        // derive counter fields from type_id
+        //   0 = impression
+        //   1 = clickthrough
+        //   2 = conversion
         int is_impression = (type_id == 0) ? 1 : 0;
         int is_clickthrough = (type_id == 1) ? 1 : 0;
         int is_conversion = (type_id == 2) ? 1 : 0;
@@ -50,16 +54,14 @@ public class TrackImpression extends VoltProcedure {
         int site_id = (int)inventory.getLong(0);
         int page_id = (int)inventory.getLong(1);
 
-	voltQueueSQL( insertImpression,
+	voltQueueSQL( insertEvent,
                       utc_time,
                       ip_address,
                       cookie_uid,
                       creative_id,
                       inventory_id,
                       type_id,
-                      utc_time,
-                      utc_time,
-                      utc_time,
+                      cost,
                       campaign_id,
                       advertiser_id,
                       site_id,

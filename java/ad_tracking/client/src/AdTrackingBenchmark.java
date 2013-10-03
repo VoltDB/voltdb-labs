@@ -1,10 +1,16 @@
 package client;
 
-import java.util.*;
+import java.util.Random;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import org.voltdb.types.TimestampType;
 
 public class AdTrackingBenchmark extends BaseBenchmark {
 
     private Random rand = new Random();
+    private MathContext mc = new MathContext(2);
+    private BigDecimal bd0 = new BigDecimal(0);
+    private long startTime = new TimestampType(System.currentTimeMillis()*1000).getTime();
 
     // inventory pre-sets
     private int sites = 1000;
@@ -14,10 +20,12 @@ public class AdTrackingBenchmark extends BaseBenchmark {
     private int advertisers = 1000;
     private int campaignsPerAdvertiser = 10;
     private int creativesPerCampaign = 10;
+    private int modulus = 100;
 
     // counters
     private int inventoryMaxID = 0;
     private int creativeMaxID = 0;
+    private long iteration = 0L;
 
     // constructor
     public AdTrackingBenchmark(BenchmarkConfig config) {
@@ -29,6 +37,7 @@ public class AdTrackingBenchmark extends BaseBenchmark {
         advertisers = config.advertisers;
         campaignsPerAdvertiser = config.campaignsperadvertiser;
         creativesPerCampaign = config.creativespercampaign;
+        modulus = creativesPerCampaign*3;
     }
 
     public void initialize() throws Exception {
@@ -72,6 +81,14 @@ public class AdTrackingBenchmark extends BaseBenchmark {
     public void iterate() throws Exception {
 
         // generate an impression
+        
+        // each iteration is 1 millisecond later
+        // the faster the throughput rate, the faster time flies!
+        // this is to get more interesting hourly or minutely results
+        iteration++;
+        TimestampType ts = new TimestampType(startTime+(iteration*1000)); 
+
+        // random IP address
         int ipAddress = 
             rand.nextInt(256)*256*256*256 +
             rand.nextInt(256)*256*256 +
@@ -81,37 +98,43 @@ public class AdTrackingBenchmark extends BaseBenchmark {
         long cookieUID = (long)rand.nextInt(1000000000);
         int creative = rand.nextInt(creativeMaxID)+1;
         int inventory = rand.nextInt(inventoryMaxID)+1;
+        BigDecimal cost = new BigDecimal(rand.nextDouble()/5,mc);
 
-        client.callProcedure(new BenchmarkCallback("TrackImpression"),
-                             "TrackImpression",
-                             System.currentTimeMillis(),
+        client.callProcedure(new BenchmarkCallback("TrackEvent"),
+                             "TrackEvent",
+                             ts,
                              ipAddress,
                              cookieUID,
                              creative,
                              inventory,
-                             0);
+                             0,
+                             cost);
 
+        int i = rand.nextInt(100);
+        int r = creative % modulus;
         // sometimes generate a click-through
-        if ( (creative + inventory) % 20 == 0) {
-            client.callProcedure(new BenchmarkCallback("TrackImpression"),
-                                 "TrackImpression",
-                                 System.currentTimeMillis(),
+        if ( (r==0 && i<10) || i == 0) { // 1% of the time at least, for 1/3 of campaigns 10% of the time
+            client.callProcedure(new BenchmarkCallback("TrackEvent"),
+                                 "TrackEvent",
+                                 ts,
                                  ipAddress,
                                  cookieUID,
                                  creative,
                                  inventory,
-                                 1);
+                                 1,
+                                 bd0);
 
-            // sometimes generate a conversion
-            if (rand.nextInt(10) == 0) {
-                client.callProcedure(new BenchmarkCallback("TrackImpression"),
-                                     "TrackImpression",
-                                     System.currentTimeMillis(),
+            // 33% conversion rate
+            if ( rand.nextInt(2) == 0 ) {
+                client.callProcedure(new BenchmarkCallback("TrackEvent"),
+                                     "TrackEvent",
+                                     ts,
                                      ipAddress,
                                      cookieUID,
                                      creative,
                                      inventory,
-                                     2);
+                                     2,
+                                     bd0);
             }
         }
     }
@@ -123,7 +146,7 @@ public class AdTrackingBenchmark extends BaseBenchmark {
         System.out.println(HORIZONTAL_RULE);
         BenchmarkCallback.printProcedureResults("INVENTORY.insert");
         BenchmarkCallback.printProcedureResults("CREATIVES.insert");
-        BenchmarkCallback.printProcedureResults("TrackImpression");
+        BenchmarkCallback.printProcedureResults("TrackEvent");
 
         super.printResults();
     }
