@@ -92,23 +92,6 @@ WHERE advertiser_id = ?
 GROUP BY campaign_id
 ORDER BY campaign_id;
 
-CREATE PROCEDURE advertiser_summary_37 AS
-SELECT 
-  campaign_id,
-  cost as spent,
-  impressions,
-  1000*cost/impressions as cpm,
-  clicks,
-  CAST(clicks AS DECIMAL)/impressions AS ctr, 
-  cost/DECODE(clicks,0,null,clicks) as cpc,
-  conversions,
-  CAST(conversions AS DECIMAL)/DECODE(clicks,0,null,clicks) as convr,
-  cost/DECODE(conversions,0,null,conversions) as cpconv
-FROM campaign_rates
-WHERE advertiser_id = ? 
-ORDER BY campaign_id;
-
-
 CREATE VIEW creative_rates AS
 SELECT 
   advertiser_id, 
@@ -139,29 +122,6 @@ WHERE advertiser_id = ? AND campaign_id = ?
 GROUP BY creative_id 
 ORDER BY creative_id;
 
-CREATE PROCEDURE campaign_summary_37 AS
-SELECT 
-  creative_id,
-  cost as spent,
-  impressions,
-  1000*cost/impressions as cpm,
-  clicks,
-  CAST(clicks AS DECIMAL)/impressions AS ctr, 
-  cost/DECODE(clicks,0,null,clicks) as cpc,
-  conversions,
-  CAST(conversions AS DECIMAL)/DECODE(clicks,0,null,clicks) as convr,
-  cost/DECODE(conversions,0,null,conversions) as cpconv
-FROM creative_rates
-WHERE advertiser_id = ? AND campaign_id = ?
-ORDER BY creative_id;
-
-
-
--- CREATE VIEW ad_campaign_rates_daily AS
--- SELECT advertiser_id, campaign_id, TRUNCATE(DAY,utc_time) as utc_dt, COUNT(*) AS records, SUM(is_impression) AS impressions, SUM(is_clickthrough) AS clicks, SUM(is_conversion) as conversions, SUM(cost) as cost
--- FROM event_data
--- GROUP BY advertiser_id, campaign_id, TRUNCATE(DAY,utc_time);
-
 CREATE VIEW advertiser_rates_minutely AS
 SELECT 
   advertiser_id, 
@@ -174,24 +134,17 @@ SELECT
 FROM event_data
 GROUP BY advertiser_id, TRUNCATE(MINUTE,utc_time);
 
--- CREATE VIEW ad_campaign_creative_rates_minutely AS
--- SELECT advertiser_id, campaign_id, creative_id, TRUNCATE(MINUTE,utc_time) as utc_min, COUNT(*) AS records, SUM(is_impression) AS impressions, SUM(is_clickthrough) AS clicks, SUM(is_conversion) as conversions
--- FROM event_data
--- GROUP BY advertiser_id, campaign_id, creative_id, TRUNCATE(MINUTE,utc_time);
-
+CREATE PROCEDURE advertiser_minutely AS
+SELECT 
+  utc_min, 
+  SUM(impressions) AS impressions, 
+  SUM(clicks) AS clicks, 
+  SUM(conversions) as conversions,
+  SUM(spent) AS spent
+FROM advertiser_rates_minutely 
+WHERE advertiser_id = ? 
+GROUP BY utc_min;
 
 CREATE PROCEDURE FROM CLASS procedures.TrackEvent;
 PARTITION PROCEDURE TrackEvent ON TABLE event_data COLUMN creative_id PARAMETER 3;
-
--- CREATE PROCEDURE ad_campaign_minutely_rates AS
--- SELECT campaign_id, utc_min, clicks/impressions as ctr, conversions/clicks as cr
--- FROM ad_campaign_rates_minutely
--- WHERE advertiser_id = ? AND utc_min > ?
--- ORDER BY campaign_id, utc_min;
-
--- CREATE PROCEDURE ad_campaign_creative_minutely_rates AS
--- SELECT creative_id, utc_min, clicks/impressions as ctr, conversions/clicks as cr
--- FROM ad_campaign_creative_rates_minutely
--- WHERE advertiser_id = ? AND campaign_id = ? AND utc_min > ? 
--- ORDER BY utc_min ASC, ctr DESC;
 

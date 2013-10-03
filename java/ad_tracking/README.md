@@ -35,7 +35,7 @@ Instructions
     
 4. Run the following SQL commands for real-time reporting:
 
-    SELECT * FROM advertiser_rates_minutely WHERE advertiser_id = 30;
+    exec advertiser_minutely 30;
     exec advertiser_summary 30;
     exec campaign_summary 30 1;
 
