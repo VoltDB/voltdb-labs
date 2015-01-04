@@ -1,8 +1,8 @@
 package client;
 
 /* This file is part of VoltDB.
- * Copyright (C) 2008-2013 VoltDB Inc.
- * 
+ * Copyright (C) 2008-2015 VoltDB Inc.
+ *
  * This file contains original code and/or modifications of original code.
  * Any modifications made by VoltDB Inc. are licensed under the following
  * terms and conditions:
@@ -186,7 +186,7 @@ public abstract class BaseBenchmark {
                 stats.getInvocationAborts(), stats.getInvocationErrors());
 
         // cast to stats.getAverageLatency from long to double
-        System.out.printf("Avg/95%% Latency %.2f/%dms\n", 
+        System.out.printf("Avg/95%% Latency %.2f/%dms\n",
                           (double)stats.getAverageLatency(),
                           stats.kPercentileLatency(0.95));
 
